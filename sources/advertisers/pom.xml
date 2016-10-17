@@ -26,4 +26,12 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>bg.jug</groupId>
+            <artifactId>microprofile-dependencies</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>
