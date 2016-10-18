@@ -1,0 +1,125 @@
+= Magazine Manager API overview
+
+This document summarizes the microservice APIs, both model classes and REST resources, of the Magazine Manager.
+
+== Content microservice
+
+=== Data model
+
+*Article*
+
+* title: String
+* content: String
+* author: String
+* photos: List<Photo>
+* comments: List<Comment>
+
+*Photo* (might be a candidate for a microservice of its own)
+
+* photo: byte[]
+* author: Author
+* tags: List<String>
+
+*Comment*
+
+* author: String
+* content: String
+
+=== Resources
+
+*ArticleResource*
+
+----
+getArticles(): List<Article>
+findArticleById(articleId: Long): Article
+findArticlesByAuthor(authorName: String): List<Article>
+addArticle(article: Article)
+updateArticle(article: Article)
+deleteArticle(articleId: Long)
+addCommentToArticle(comment: Comment, articleId: Long)
+updateComment(comment: Comment)
+deleteComment(commentId: Long)
+----
+
+== Authors microservice
+
+=== Data model
+
+*Author*
+
+* firstName: String
+* lastName: String
+* email: String
+* isRegular: boolean
+* salary: int
+
+=== Resources
+
+*AuthorResource*
+
+----
+getAuthors(): List<Author>
+findAuthorById(authorId: Long): Author
+findAuthorByNames(names: String): List<Author>
+findRegularAuthors(): List<Author>
+addAuthor(author: Author)
+updateAuthor(author: Author)
+deleteAuthor(authorId: Long)
+----
+
+== Subscribers microservice
+
+=== Data model
+
+*Subscriber*
+
+* firstName: String
+* lastName: String
+* email: String
+* address: String
+* subscribedUntil: LocalDate
+
+=== Resources
+
+*SubscriberResource*
+
+----
+getSubscribers(): List<Subscriber>
+findSubscriberById(subscriberId: Long): Subscriber
+findExpiringSubscriptions(afterDays: Integer): List<Subscriber>
+addSubscriber(subscriber: Subscriber)
+updateSubscriber(subscriber: Subscriber)
+prolongSubscription(subscriber: Subscriber, untilDay: LocalDate)
+deleteSubscriber(subscriberId: Long)
+----
+
+== Advertisers microservice
+
+=== Data model
+
+*Advertiser*
+
+* name: String
+* logo: byte[]
+* website: String
+* contactEmail: String
+* package: Package
+
+*Package*
+
+* identifier: String
+* price: Integer
+
+=== Resources
+
+*AdvertiserResource*
+
+----
+getAdvertisers(): List<Advertiser>
+findAdvertiserById(advertiserId: Long): Advertiser
+findAdvertiserByName(name: String): Advertiser
+findAdvertisersByPackage(packageIdentifier: String): List<Advertiser>
+addAdvertiser(advertiser: Advertiser)
+updateAdvertiser(advertiser: Advertiser)
+deleteAdvertiser(advertiserId: Long)
+----
