@@ -7,9 +7,41 @@
         <groupId>bg.jug</groupId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
-    <artifactId>subscribers</artifactId>
+    <artifactId>authors</artifactId>
+    <name>Magazine.Subscribers</name>
+    <description>The Subscribers microservice resource</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>bg.jug</groupId>
+            <artifactId>microprofile-dependencies</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- JAVA EE -->
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>${version.javaee}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+            <version>2.0.1</version>
+        </dependency>
+
+        <!-- Tests -->
+        <dependency>
+            <groupId>org.jboss.arquillian</groupId>
+            <artifactId>arquillian-bom</artifactId>
+            <version>${version.arquillian}</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+
     <build>
-        <finalName>subscribers</finalName>
+        <finalName>authors</finalName>
         <plugins>
             <plugin>
                 <artifactId>maven-war-plugin</artifactId>
@@ -25,14 +57,9 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <version.arquillian>1.1.11.Final</version.arquillian>
+        <version.payara>4.1.1.163</version.payara>
+        <version.javaee>7.0</version.javaee>
     </properties>
-
-    <dependencies>
-        <dependency>
-            <groupId>bg.jug</groupId>
-            <artifactId>microprofile-dependencies</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
 
 </project>
