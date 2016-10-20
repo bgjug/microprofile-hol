@@ -1,6 +1,7 @@
 package bg.jug.magman.subscribers.rest;
 
 import bg.jug.magman.subscribers.domain.Subscriber;
+import bg.jug.magman.subscribers.persistence.SubscribersDAO;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.*;
@@ -15,83 +16,48 @@ import java.util.List;
 @Path("/")
 public class ResourceSubscribers {
 
-    /**
-     * Get subscribers list.
-     *
-     * @return the list
-     */
+    @Inject
+    SubscribersDAO subscribersDAO;
+
     @GET
     @Path("/findAll")
     public List<Subscriber> getSubscribers(){
-        return new ArrayList<>();
+        return subscribersDAO.getSubscribers();
     }
 
-    /**
-     * Find subscriber by id subscriber.
-     *
-     * @param subscriberId the subscriber id
-     * @return the subscriber
-     */
     @GET
     @Path("/findById/{id}")
     public Subscriber findSubscriberById(@PathParam("id") Long subscriberId){
-        return null;
+        return subscribersDAO.findSubscriberById(subscriberId);
     }
 
-    /**
-     * Find expiring subscriptions list.
-     *
-     * @param afterDays the after days
-     * @return the list
-     */
     @GET
     @Path("/findExpiring/{days}")
     public List<Subscriber> findExpiringSubscriptions(@PathParam("days") Integer afterDays){
-        return new ArrayList<>();
+        return subscribersDAO.findExpiringSubscriptions(afterDays);
     }
 
-    /**
-     * Add subscriber.
-     *
-     * @param subscriber the subscriber
-     */
     @POST
     @Path("/add")
     public void addSubscriber(final Subscriber subscriber){
-
+        subscribersDAO.addSubscriber(subscriber);
     }
 
-    /**
-     * Update subscriber.
-     *
-     * @param subscriber the subscriber
-     */
     @PUT
     @Path("/update")
     public void updateSubscriber(final Subscriber subscriber){
-
+        subscribersDAO.updateSubscriber(subscriber);
     }
 
-    /**
-     * Prolong subscription.
-     *
-     * @param subscriber the subscriber
-     * @param untilDay   the until day
-     */
     @PUT
     @Path("/prolong")
     public void prolongSubscription(final Subscriber subscriber, final LocalDate untilDay){
-
+        subscribersDAO.prolongSubscription(subscriber,untilDay);
     }
 
-    /**
-     * Delete subscriber.
-     *
-     * @param subscriberId the subscriber id
-     */
     @DELETE
     @Path("/delete/{id}")
     public void deleteSubscriber(@PathParam("id") Long subscriberId){
-
+        subscribersDAO.deleteSubscriber(subscriberId);
     }
 }

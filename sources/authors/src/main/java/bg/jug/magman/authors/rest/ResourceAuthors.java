@@ -1,8 +1,10 @@
 package bg.jug.magman.authors.rest;
 
 import bg.jug.magman.authors.domain.Author;
+import bg.jug.magman.authors.persistence.AuthorDAO;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,82 +16,49 @@ import java.util.List;
 @Path("/")
 public class ResourceAuthors {
 
-    /**
-     * Gets authors.
-     *
-     * @return the authors
-     */
+    @Inject
+    private AuthorDAO authorDAO;
+
     @GET
     @Path("/findAll")
     public List<Author> getAuthors() {
-        return new ArrayList<>();
+        return authorDAO.getAuthors();
     }
 
-    /**
-     * Find author by id author.
-     *
-     * @param authorId the author id
-     * @return the author
-     */
     @GET
     @Path("/findById/{id}")
     public Author findAuthorById(@PathParam("id") Long authorId) {
-        return null;
+        return authorDAO.findAuthorById(authorId);
     }
 
-    /**
-     * Find author by names list.
-     *
-     * @param names the names
-     * @return the list
-     */
+
     @GET
     @Path("/findByNames/{names}")
     public List<Author> findAuthorByNames(@PathParam("names") final String names) {
-        return new ArrayList<>();
+        return authorDAO.findAuthorByNames(names);
     }
 
-    /**
-     * Find regular authors list.
-     *
-     * @return the list
-     */
     @GET
     @Path("/findAllRegular")
     public List<Author> findRegularAuthors() {
-        return new ArrayList<>();
+        return authorDAO.findRegularAuthors();
     }
 
-    /**
-     * Add author.
-     *
-     * @param author the author
-     */
     @POST
     @Path("/add")
     public void addAuthor(final Author author) {
-
+        authorDAO.addAuthor(author);
     }
 
-    /**
-     * Update author.
-     *
-     * @param author the author
-     */
     @PUT
     @Path("/update")
     public void updateAuthor(final Author author) {
-
+        authorDAO.updateAuthor();
     }
 
-    /**
-     * Delete author.
-     *
-     * @param authorId the author id
-     */
     @DELETE
     @Path("/delete/{id}")
     public void deleteAuthor(@PathParam("id") Long authorId) {
-
+        authorDAO.deleteAuthor(authorId);
     }
 }
