@@ -1,4 +1,4 @@
-package bg.jug.authors.domain;
+package bg.jug.magman.subscribers.domain;
 
 import java.time.LocalDate;
 
@@ -7,98 +7,71 @@ import java.time.LocalDate;
  */
 public class Subscriber {
 
+    private Long id;
     private String firstName;
     private String lastName;
     private String email;
     private String address;
     private LocalDate subscribedUntil;
 
-    /**
-     * Gets first name.
-     *
-     * @return the first name
-     */
+    public Subscriber(String firstName, String lastName, String email, String address, LocalDate subscribedUntil) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.address = address;
+        this.subscribedUntil = subscribedUntil;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
     public String getFirstName() {
         return firstName;
     }
 
-    /**
-     * Sets first name.
-     *
-     * @param firstName the first name
-     */
+
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
-    /**
-     * Gets last name.
-     *
-     * @return the last name
-     */
     public String getLastName() {
         return lastName;
     }
 
-    /**
-     * Sets last name.
-     *
-     * @param lastName the last name
-     */
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
-    /**
-     * Gets email.
-     *
-     * @return the email
-     */
+
     public String getEmail() {
         return email;
     }
 
-    /**
-     * Sets email.
-     *
-     * @param email the email
-     */
+
     public void setEmail(String email) {
         this.email = email;
     }
 
-    /**
-     * Gets address.
-     *
-     * @return the address
-     */
+
     public String getAddress() {
         return address;
     }
 
-    /**
-     * Sets address.
-     *
-     * @param address the address
-     */
+
     public void setAddress(String address) {
         this.address = address;
     }
 
-    /**
-     * Gets subscribed until.
-     *
-     * @return the subscribed until
-     */
+
     public LocalDate getSubscribedUntil() {
         return subscribedUntil;
     }
 
-    /**
-     * Sets subscribed until.
-     *
-     * @param subscribedUntil the subscribed until
-     */
+
     public void setSubscribedUntil(LocalDate subscribedUntil) {
         this.subscribedUntil = subscribedUntil;
     }

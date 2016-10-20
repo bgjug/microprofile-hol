@@ -1,6 +1,6 @@
-package bg.jug.authors.rest;
+package bg.jug.magman.authors.rest;
 
-import bg.jug.authors.domain.Author;
+import bg.jug.magman.authors.domain.Author;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.*;
