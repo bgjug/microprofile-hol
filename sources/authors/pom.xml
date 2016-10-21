@@ -8,7 +8,7 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>authors</artifactId>
-    <name>Magazine.Authors</name>
+    <name>authors</name>
     <description>The Authors microservice resource</description>
 
     <dependencies>
@@ -34,5 +34,9 @@
         </plugins>
     </build>
     <packaging>war</packaging>
-
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 </project>

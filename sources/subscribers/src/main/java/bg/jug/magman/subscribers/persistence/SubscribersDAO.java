@@ -2,6 +2,7 @@ package bg.jug.magman.subscribers.persistence;
 
 import bg.jug.magman.subscribers.domain.Subscriber;
 
+import javax.enterprise.context.ApplicationScoped;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ public class SubscribersDAO {
     }
 
     public Subscriber findSubscriberById(Long subscriberId) {
-        subscribers.get(subscriberId);
+        return subscribers.get(subscriberId);
     }
 
     public List<Subscriber> findExpiringSubscriptions(Integer afterDays) {

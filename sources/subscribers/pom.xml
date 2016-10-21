@@ -8,8 +8,10 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>subscribers</artifactId>
-    <name>Magazine.Subscribers</name>
+    <name>subscribers</name>
     <description>The Subscribers microservice resource</description>
+
+
 
     <dependencies>
         <dependency>
@@ -35,4 +37,10 @@
         </plugins>
     </build>
     <packaging>war</packaging>
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 </project>
+

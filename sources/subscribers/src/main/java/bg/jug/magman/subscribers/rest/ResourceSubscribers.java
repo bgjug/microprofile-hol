@@ -4,6 +4,7 @@ import bg.jug.magman.subscribers.domain.Subscriber;
 import bg.jug.magman.subscribers.persistence.SubscribersDAO;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import java.time.LocalDate;
 import java.util.ArrayList;

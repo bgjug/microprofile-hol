@@ -53,7 +53,7 @@ public class ResourceAuthors {
     @PUT
     @Path("/update")
     public void updateAuthor(final Author author) {
-        authorDAO.updateAuthor();
+        authorDAO.updateAuthor(author);
     }
 
     @DELETE
