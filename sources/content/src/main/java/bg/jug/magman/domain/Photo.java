@@ -15,32 +15,35 @@
  */
 package bg.jug.magman.domain;
 
+import javax.json.*;
+import java.io.File;
+import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
-public class Photo {
+public class Photo implements Jsonable {
 
     private Long id;
-    private byte[] photo;
+    private File photoLocation;
     private String author;
     private List<String> tags;
 
     public Photo() {
     }
 
-    public Photo(byte[] photo, String author) {
-        this(photo, author, new ArrayList<>());
+    public Photo(File photoLocation, String author) {
+        this(photoLocation, author, new ArrayList<>());
     }
 
-    public Photo(byte[] photo, String author, List<String> tags) {
-        this(null, photo, author, tags);
+    public Photo(File photoLocation, String author, List<String> tags) {
+        this(null, photoLocation, author, tags);
     }
 
-    public Photo(Long id, byte[] photo, String author, List<String> tags) {
+    public Photo(Long id, File photoLocation, String author, List<String> tags) {
         this.id = id;
-        this.photo = photo;
+        this.photoLocation = photoLocation;
         this.author = author;
         this.tags = tags;
     }
@@ -53,12 +56,12 @@ public class Photo {
         this.id = id;
     }
 
-    public byte[] getPhoto() {
-        return photo;
+    public File getPhotoLocation() {
+        return photoLocation;
     }
 
-    public void setPhoto(byte[] photo) {
-        this.photo = photo;
+    public void setPhotoLocation(File photoLocation) {
+        this.photoLocation = photoLocation;
     }
 
     public String getAuthor() {
@@ -81,15 +84,15 @@ public class Photo {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Photo photo1 = (Photo) o;
-        return Arrays.equals(photo, photo1.photo) &&
-                Objects.equals(author, photo1.author) &&
-                Objects.equals(tags, photo1.tags);
+        Photo photo = (Photo) o;
+        return Objects.equals(photoLocation, photo.photoLocation) &&
+                Objects.equals(author, photo.author) &&
+                Objects.equals(tags, photo.tags);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(photo, author, tags);
+        return Objects.hash(photoLocation, author, tags);
     }
 
     @Override
@@ -98,5 +101,29 @@ public class Photo {
                 "author='" + author + '\'' +
                 ", tags=" + tags +
                 '}';
+    }
+
+    public static Photo fromJson(String jsonString) {
+        JsonReader reader = Json.createReader(new StringReader(jsonString));
+        JsonObject jsonObject = reader.readObject();
+
+        Photo photo = new Photo();
+        photo.id = jsonObject.getJsonNumber("id").longValue();
+        photo.author = jsonObject.getString("author");
+        photo.tags = jsonObject.getJsonArray("tags").stream()
+                .map(jsonValue -> ((JsonString) jsonValue).getString())
+                .collect(Collectors.toList());
+
+        return photo;
+    }
+
+    public JsonObject toJson() {
+        JsonObjectBuilder photoJson = Json.createObjectBuilder();
+        photoJson.add("id", id);
+        photoJson.add("author", author);
+        JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+        tags.forEach(arrayBuilder::add);
+        photoJson.add("tags", arrayBuilder.build());
+        return photoJson.build();
     }
 }

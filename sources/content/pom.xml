@@ -18,7 +18,73 @@
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>net.wasdev.wlp.maven.plugins</groupId>
+                <artifactId>liberty-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>create-server</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>create-server</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>start-server</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>start-server</goal>
+                        </goals>
+                        <configuration>
+                            <verifyTimeout>60</verifyTimeout>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>deploy-app</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>deploy</goal>
+                        </goals>
+                        <configuration>
+                            <appArchive>${project.build.directory}/content.war</appArchive>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>stop-server</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>stop-server</goal>
+                        </goals>
+                        <configuration>
+                            <serverStopTimeout>60</serverStopTimeout>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>package-server</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>package-server</goal>
+                        </goals>
+                        <configuration>
+                            <assemblyInstallDirectory>${project.build.directory}</assemblyInstallDirectory>
+                            <packageFile>${project.build.directory}/content.jar</packageFile>
+                            <include>runnable</include>
+                        </configuration>
+                    </execution>
+                </executions>
+                <configuration>
+                    <assemblyArtifact>
+                        <groupId>com.ibm.websphere.appserver.runtime</groupId>
+                        <artifactId>wlp-microProfile1</artifactId>
+                        <version>16.0.0.3</version>
+                        <type>zip</type>
+                    </assemblyArtifact>
+                    <userDirectory>${project.build.directory}</userDirectory>
+                    <serverName>contentServer</serverName>
+                </configuration>
+            </plugin>
         </plugins>
+
     </build>
     <packaging>war</packaging>
     <properties>
@@ -33,6 +99,12 @@
             <artifactId>microprofile-dependencies</artifactId>
             <version>${project.version}</version>
             <type>pom</type>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.1.0</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

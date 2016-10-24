@@ -31,19 +31,27 @@ public class ArticleDAO {
     private AtomicLong sequence = new AtomicLong(0);
 
     private Map<Long, Article> articles = new ConcurrentHashMap<>();
+    private Map<Long, Comment> comments = new ConcurrentHashMap<>();
 
     public Article addArticle(Article article) {
         Long articleId = sequence.incrementAndGet();
         article.setId(articleId);
 
-        article.getPhotos().stream()
-                            .filter(photo -> photo.getId() == null)
-                            .forEach(photo -> photo.setId(sequence.incrementAndGet()));
+        List<Photo> photos = article.getPhotos();
+        if (photos != null) {
+            photos.stream()
+                .filter(photo -> photo.getId() == null)
+                .forEach(photo -> photo.setId(sequence.incrementAndGet()));
 
-        article.getComments().stream()
-                .filter(comment -> comment.getId() == null)
-                .forEach(comment -> comment.setId(sequence.incrementAndGet()));
+        }
 
+        List<Comment> comments = article.getComments();
+        if (comments != null) {
+            comments.stream()
+                    .filter(comment -> comment.getId() == null)
+                    .forEach(comment -> comment.setId(sequence.incrementAndGet()));
+            comments.forEach(comment -> this.comments.put(comment.getId(), comment));
+        }
         articles.put(articleId, article);
 
         return article;
@@ -82,15 +90,44 @@ public class ArticleDAO {
         if (article != null) {
             article.getComments().add(comment);
         }
+        comments.put(comment.getId(), comment);
 
         return comment;
     }
 
-//    public void updateComment(Comment comment) {
-//        articles.values().stream()
-//                .flatMap(article -> article.getComments().stream())
-//                .filter(articleComment -> articleComment.getId().equals(comment.getId()))
-//                .findFirst()
-//                .ifPresent();
-//    }
+    public Comment updateComment(Comment comment) {
+        if (comment.getId() != null) {
+            comments.put(comment.getId(), comment);
+        }
+        return comment;
+    }
+
+    public void deleteComment(Long commentId) {
+        Comment commentToRemove = comments.get(commentId);
+        if (commentToRemove != null) {
+            comments.remove(commentId);
+            articles.values().stream()
+                    .filter(article -> articleContainsComment(article, commentId))
+                    .findFirst()
+                    .ifPresent(article -> article.getComments().remove(commentToRemove));
+        }
+    }
+
+    private boolean articleContainsComment(Article article, Long commentId) {
+        return article.getComments().stream().anyMatch(comment -> comment.getId().equals(commentId));
+    }
+
+    public Photo addPhotoToArticle(Photo photo, Long articleId) {
+        photo.setId(sequence.incrementAndGet());
+        Article article = articles.get(articleId);
+        article.getPhotos().add(photo);
+        return photo;
+    }
+
+    public Optional<Photo> findPhotoById(Long photoId) {
+        return articles.values().stream()
+                .flatMap(article -> article.getPhotos().stream())
+                .filter(photo -> photo.getId().equals(photoId))
+                .findFirst();
+    }
 }
