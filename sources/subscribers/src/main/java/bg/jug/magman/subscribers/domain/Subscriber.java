@@ -22,6 +22,15 @@ public class Subscriber {
         this.subscribedUntil = subscribedUntil;
     }
 
+    public Subscriber(Long id, String firstName, String lastName, String email, String address, LocalDate subscribedUntil) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.address = address;
+        this.subscribedUntil = subscribedUntil;
+    }
+
     public Long getId() {
         return id;
     }

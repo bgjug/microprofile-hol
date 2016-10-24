@@ -20,6 +20,15 @@ public class Author {
         this.salary = salary;
     }
 
+    public Author(Long id, String firstName, String lastName, String email, boolean isRegular, int salary) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.isRegular = isRegular;
+        this.salary = salary;
+    }
+
     public Long getId() {
         return id;
     }
