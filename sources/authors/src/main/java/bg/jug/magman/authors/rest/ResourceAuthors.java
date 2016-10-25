@@ -71,12 +71,12 @@ public class ResourceAuthors {
 
     private JsonObjectBuilder buildAuthorJson(Author author){
         JsonObjectBuilder result = Json.createObjectBuilder();
-        result.add("LastName",author.getLastName())
-        .add("FirstName",author.getFirstName())
-        .add("Email",author.getEmail())
-        .add("Salary",author.getSalary())
-        .add("Regular",author.isRegular());
-        if (author.getId()!=null) result.add("Id",author.getId());
+        result.add("lastName",author.getLastName())
+        .add("firstName",author.getFirstName())
+        .add("email",author.getEmail())
+        .add("salary",author.getSalary())
+        .add("regular",author.isRegular());
+        if (author.getId()!=null) result.add("id",author.getId());
         return result;
     }
 
@@ -92,6 +92,6 @@ public class ResourceAuthors {
         JsonReader reader = Json.createReader(new StringReader(json));
         JsonObject authorObject = reader.readObject();
         reader.close();
-        return new Author(Long.valueOf(authorObject.getString("Id")),authorObject.getString("FirstName"),authorObject.getString("LastName"),authorObject.getString("Email"),Boolean.valueOf(authorObject.getString("Regular")),Integer.valueOf(authorObject.getString("Salary")));
+        return new Author(Long.valueOf(authorObject.getString("id")),authorObject.getString("firstName"),authorObject.getString("lastName"),authorObject.getString("email"),Boolean.valueOf(authorObject.getString("regular")),Integer.valueOf(authorObject.getString("salary")));
     }
 }

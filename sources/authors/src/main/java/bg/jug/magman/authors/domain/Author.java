@@ -1,9 +1,11 @@
 package bg.jug.magman.authors.domain;
 
+import java.io.Serializable;
+
 /**
  * Created by Dmitry Alexandrov on 19.10.16.
  */
-public class Author {
+public class Author implements Serializable {
 
     private Long id;
     private String firstName;
@@ -11,6 +13,10 @@ public class Author {
     private String email;
     private boolean isRegular;
     private int salary;
+
+    public Author() {
+        // empty constructor
+    }
 
     public Author(String firstName, String lastName, String email, boolean isRegular, int salary) {
         this.firstName = firstName;
@@ -100,5 +106,17 @@ public class Author {
         result = 31 * result + (isRegular ? 1 : 0);
         result = 31 * result + salary;
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Author{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", isRegular=" + isRegular +
+                ", salary=" + salary +
+                '}';
     }
 }

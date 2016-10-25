@@ -1,6 +1,9 @@
 package bg.jug.magman.authors;
 
 import bg.jug.magman.authors.domain.Author;
+import bg.jug.magman.authors.persistence.AuthorDAO;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -9,15 +12,19 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import javax.inject.Inject;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import java.io.File;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -31,12 +38,25 @@ public class ResourceAuthorsTest {
 
     private final Logger log = Logger.getLogger(ResourceAuthorsTest.class.getName());
 
-    @Deployment(testable = false)
-    public static WebArchive deploy() {
+    @Inject
+    private AuthorDAO authorDAO;
 
+    @Deployment(testable = false)
+    public static WebArchive deploy() throws Exception{
         return ShrinkWrap.create(WebArchive.class
                 , ResourceAuthorsTest.class.getName() + ".war")
-                .addPackage("bg.jug.magman.authors");
+                .addPackage("bg.jug.magman.authors.domain")
+                .addPackage("bg.jug.magman.authors.persistence")
+                .addPackage("bg.jug.magman.authors.rest");
+    }
+
+    @Before
+    public void init() throws Exception{
+        final ObjectMapper om = new ObjectMapper();
+        final InputStream is = this.getClass().getResourceAsStream("/authors.json");
+        final Set<Author> authors = om.readValue(is, new TypeReference<Set<Author>>() {
+        });
+        authors.forEach(e->authorDAO.addAuthor(e));
     }
 
     @ArquillianResource
@@ -45,13 +65,12 @@ public class ResourceAuthorsTest {
     @Test
     @RunAsClient
     public void testGet() {
-        final Set<Author> authors = this.getWebTarget("authors")
+        final Set<Author> authors = this.getWebTarget("findAll")
                 .request(MediaType.APPLICATION_JSON_TYPE)
                 .get(new GenericType<Set<Author>>() {
                 });
 
-        Assert.assertFalse(authors.isEmpty());
-
+        Assert.assertTrue(authors.size()==2);
         authors.forEach(e->this.log.info("Listed: " + e.getFirstName() + " " + e.getLastName()));
     }
 
