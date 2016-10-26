@@ -75,11 +75,11 @@ public class ResourceSubscribers {
     // Helpers
     private JsonObjectBuilder buildSubscriberJson(Subscriber subscriber) {
         JsonObjectBuilder result = Json.createObjectBuilder();
-        result.add("Address", subscriber.getAddress())
-                .add("Email", subscriber.getEmail())
-                .add("FirstName", subscriber.getFirstName())
-                .add("LastName", subscriber.getLastName())
-                .add("SubscribedUntil", subscriber.getSubscribedUntil().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+        result.add("address", subscriber.getAddress())
+                .add("email", subscriber.getEmail())
+                .add("firstName", subscriber.getFirstName())
+                .add("lastName", subscriber.getLastName())
+                .add("subscribedUntil", subscriber.getSubscribedUntil().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
         if(subscriber.getId()!=null)
                 result.add("Id", subscriber.getId());
         return result;

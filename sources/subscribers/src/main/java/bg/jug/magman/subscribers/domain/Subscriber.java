@@ -14,6 +14,10 @@ public class Subscriber {
     private String address;
     private LocalDate subscribedUntil;
 
+    public Subscriber(){
+        //empty constructor
+    }
+
     public Subscriber(String firstName, String lastName, String email, String address, LocalDate subscribedUntil) {
         this.firstName = firstName;
         this.lastName = lastName;
