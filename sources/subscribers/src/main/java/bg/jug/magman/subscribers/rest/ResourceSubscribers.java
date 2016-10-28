@@ -4,6 +4,7 @@ import bg.jug.magman.subscribers.domain.Subscriber;
 import bg.jug.magman.subscribers.persistence.SubscribersDAO;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.json.*;
 import javax.ws.rs.*;
@@ -16,17 +17,19 @@ import java.util.List;
 /**
  * Created by Dmitry Alexandrov on 19.10.16.
  */
-@ApplicationScoped
+@RequestScoped
 @Path("/")
+@Produces("application/json")
 public class ResourceSubscribers {
 
     @Inject
-    SubscribersDAO subscribersDAO;
+    private SubscribersDAO subscribersDAO;
 
     @GET
     @Path("/findAll")
-    public List<Subscriber> getSubscribers() {
-        return subscribersDAO.getSubscribers();
+    @Produces("application/json")
+    public Response getSubscribers() {
+        return Response.ok(buildSubscriberJsonArray(subscribersDAO.getSubscribers()).build()).build();
     }
 
     @GET

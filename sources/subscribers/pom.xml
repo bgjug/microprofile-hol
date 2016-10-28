@@ -77,7 +77,7 @@
     </dependencies>
 
     <build>
-        <finalName>authors</finalName>
+        <finalName>subscribers</finalName>
         <plugins>
             <plugin>
                 <artifactId>maven-war-plugin</artifactId>
@@ -86,6 +86,45 @@
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <dependencies>
+                    <dependency>
+                        <groupId>fish.payara.extras</groupId>
+                        <artifactId>payara-microprofile</artifactId>
+                        <version>1.0</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>payara-uber-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>fish.payara.micro.PayaraMicro</mainClass>
+                            <arguments>
+                                <argument>--noCluster</argument>
+                                <argument>--autoBindHttp</argument>
+                                <argument>--logo</argument>
+                                <argument>--deploy</argument>
+                                <argument>${basedir}/target/${project.artifactId}.war</argument>
+                                <argument>--outputUberJar</argument>
+                                <argument>${basedir}/target/${project.artifactId}.jar</argument>
+                            </arguments>
+                            <includeProjectDependencies>true</includeProjectDependencies>
+                            <includePluginDependencies>true</includePluginDependencies>
+                            <executableDependency>
+                                <groupId>fish.payara.extras</groupId>
+                                <artifactId>payara-microprofile</artifactId>
+                            </executableDependency>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
     <packaging>war</packaging>
