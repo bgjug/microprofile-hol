@@ -18,6 +18,19 @@
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.wildfly.swarm</groupId>
+                <artifactId>wildfly-swarm-plugin</artifactId>
+                <version>${version.wildfly-swarm}</version>
+                <executions>
+                    <execution>
+                        <id>package</id>
+                        <goals>
+                            <goal>package</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
     <packaging>war</packaging>
@@ -25,6 +38,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <version.wildfly-swarm>2016.9</version.wildfly-swarm>
     </properties>
 
     <dependencies>
@@ -32,6 +46,14 @@
             <groupId>bg.jug</groupId>
             <artifactId>microprofile-dependencies</artifactId>
             <version>${project.version}</version>
+            <type>pom</type>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.wildfly.swarm</groupId>
+            <artifactId>microprofile</artifactId>
+            <version>${version.wildfly-swarm}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>
