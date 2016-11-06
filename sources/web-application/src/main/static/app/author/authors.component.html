@@ -1,0 +1,10 @@
+<h3>{{title}}</h3>
+<div class="list-group">
+    <a href="#" class="list-group-item list-group-item-action"
+       *ngFor="let author of authors"
+       [class.selected]="author === selectedAuthor"
+       (click)="onSelect(author)">
+        <span class="badge">Author: {{author.lastName}}</span>
+    </a>
+</div>
+<author [author]="selectedAuthor"></author>
