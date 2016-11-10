@@ -49,6 +49,10 @@
         <version.commons-io>2.5</version.commons-io>
         <version.commons-lang3>3.4</version.commons-lang3>
         <version.collections>3.2.2</version.collections>
+        <!-- Test -->
+        <version.arquillian>1.1.11.Final</version.arquillian>
+        <version.junit>4.12</version.junit>
+        <version.jsonunit>1.12.1</version.jsonunit>
     </properties>
 
     <build>
@@ -187,6 +191,7 @@
                 <dependency>
                     <groupId>org.apache.tomee</groupId>
                     <artifactId>javaee-api</artifactId>
+                    <version>${version.javaee}</version>
                     <scope>provided</scope>
                 </dependency>
                 <dependency>
@@ -230,18 +235,6 @@
                     <version>${project.version}</version>
                     <type>war</type>
                     <scope>provided</scope>
-                </dependency>
-
-                <!--TEST-->
-                <dependency>
-                    <groupId>org.apache.tomee</groupId>
-                    <artifactId>arquillian-tomee-embedded</artifactId>
-                    <scope>test</scope>
-                </dependency>
-                <dependency>
-                    <groupId>org.apache.tomee</groupId>
-                    <artifactId>tomee-jaxrs</artifactId>
-                    <scope>test</scope>
                 </dependency>
 
                 <dependency>
