@@ -1,14 +1,14 @@
 import {Injectable} from "@angular/core";
-import {Content} from "./content";
+import {Article} from "./article";
 import {Endpoint} from "../shared/endpoint";
 import {Http} from "@angular/http";
 import "../rxjs-operators";
 import {EndpointsService} from "../shared/endpoints.service";
 
 @Injectable()
-export class ContentService {
+export class ArticleService {
 
-    private contents: Content[];
+    private articles: Article[];
     private endPoint: Endpoint;
 
     constructor(private http: Http, private endpointsService: EndpointsService) {
@@ -19,7 +19,7 @@ export class ContentService {
         if (undefined != this.endPoint) {
             callback();
         } else {
-            this.endpointsService.getEndpoint("content").then(endPoint => this.setEndpoint(endPoint)).then(callback).catch(this.handleError);
+            this.endpointsService.getEndpoint("article").then(endPoint => this.setEndpoint(endPoint)).then(callback).catch(this.handleError);
         }
     }
 
@@ -27,21 +27,21 @@ export class ContentService {
         this.endPoint = endPoint;
     }
 
-    getContent(): Promise<Content[]> {
+    getArticle(): Promise<Article[]> {
 
-        if (undefined != this.contents) {
-            return Promise.resolve(this.contents);
+        if (undefined != this.articles) {
+            return Promise.resolve(this.articles);
         }
 
         return this.http.get(this.endPoint.url + '/all')
             .toPromise()
-            .then(response => this.setContent(response.json()))
+            .then(response => this.setArticle(response.json()))
             .catch(this.handleError);
     }
 
-    private setContent(any: any): Content[] {
-        this.contents = any as Content[];
-        return this.contents;
+    private setArticle(any: any): Article[] {
+        this.articles = any as Article[];
+        return this.articles;
     }
 
     private handleError(error: any): Promise<any> {

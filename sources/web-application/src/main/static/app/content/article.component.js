@@ -11,21 +11,22 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 const core_1 = require("@angular/core");
 const content_1 = require("./content");
 core_1.enableProdMode();
-let ContentComponent = class ContentComponent {
+let ArticleComponent = class ArticleComponent {
     constructor() {
-        this.title = 'Content';
+        this.title = 'Article';
     }
 };
 __decorate([
     core_1.Input(), 
-    __metadata('design:type', content_1.Content)
-], ContentComponent.prototype, "content", void 0);
-ContentComponent = __decorate([
+    __metadata('design:type', (typeof (_a = typeof content_1.Article !== 'undefined' && content_1.Article) === 'function' && _a) || Object)
+], ArticleComponent.prototype, "content", void 0);
+ArticleComponent = __decorate([
     core_1.Component({
-        selector: 'content',
+        selector: 'article',
         templateUrl: 'app/content/content.component.html'
     }), 
     __metadata('design:paramtypes', [])
-], ContentComponent);
-exports.ContentComponent = ContentComponent;
-//# sourceMappingURL=content.component.js.map
+], ArticleComponent);
+exports.ArticleComponent = ArticleComponent;
+var _a;
+//# sourceMappingURL=article.component.js.map

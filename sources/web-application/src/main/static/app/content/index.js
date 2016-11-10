@@ -1,10 +1,10 @@
 "use strict";
-var contents_component_ts_1 = require('./contents.component.ts');
-exports.ContentsComponent = contents_component_ts_1.ContentsComponent;
-var content_component_ts_1 = require('./content.component.ts');
-exports.ContentComponent = content_component_ts_1.ContentComponent;
-var content_service_ts_1 = require('./content.service.ts');
-exports.ContentService = content_service_ts_1.ContentService;
-var content_ts_1 = require('./content.ts');
-exports.Content = content_ts_1.Content;
+var articles_component_ts_1 = require('./articles.component.ts');
+exports.ArticlesComponent = articles_component_ts_1.ArticlesComponent;
+var article_component_ts_1 = require('./article.component.ts');
+exports.ArticleComponent = article_component_ts_1.ArticleComponent;
+var article_service_ts_1 = require('./article.service.ts');
+exports.ArticleService = article_service_ts_1.ArticleService;
+var article_ts_1 = require('./article.ts');
+exports.Article = article_ts_1.Article;
 //# sourceMappingURL=index.js.map

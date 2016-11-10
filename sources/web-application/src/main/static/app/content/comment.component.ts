@@ -1,15 +1,15 @@
 import {Component, Input, enableProdMode} from "@angular/core";
-import {Content} from "./content";
+import {Comment} from "./content";
 
 enableProdMode();
 
 @Component({
-    selector: 'content',
+    selector: 'comment',
     templateUrl: 'app/content/content.component.html'
 })
 
-export class ContentComponent {
-    title = 'Content';
+export class CommentComponent {
+    title = 'Comment';
     @Input()
-    content: Content;
+    content: Comment;
 }

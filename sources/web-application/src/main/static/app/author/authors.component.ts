@@ -7,7 +7,7 @@ enableProdMode();
 
 @Component({
     selector: 'authors',
-    templateUrl: 'app/schedule/authors.component.html'
+    templateUrl: 'app/author/authors.component.html'
 })
 
 export class AuthorsComponent implements OnInit {

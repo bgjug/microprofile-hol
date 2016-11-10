@@ -1,0 +1,10 @@
+<h3>{{title}}</h3>
+<div class="list-group">
+    <a href="#" class="list-group-item list-group-item-action"
+       *ngFor="let article of article"
+       [class.selected]="article === selectedArticle"
+       (click)="onSelect(article)">
+        <span class="badge">Article: {{article}}</span>
+    </a>
+</div>
+<article [article]="selectedArticle"></article>

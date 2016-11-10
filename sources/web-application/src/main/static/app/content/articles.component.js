@@ -10,41 +10,41 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 const core_1 = require("@angular/core");
 const router_1 = require("@angular/router");
-const content_service_1 = require("./content.service");
+const article_service_1 = require("./article.service");
 core_1.enableProdMode();
-let ContentsComponent = class ContentsComponent {
-    constructor(router, contentService) {
+let ArticlesComponent = class ArticlesComponent {
+    constructor(router, articleService) {
         this.router = router;
-        this.contentService = contentService;
-        this.title = 'Contents';
+        this.articleService = articleService;
+        this.title = 'Articles';
     }
     ngOnInit() {
         let _self = this;
-        this.contentService.init(function () {
-            _self.getContents();
+        this.articleService.init(function () {
+            _self.getArticles();
         });
     }
-    getContents() {
-        this.contentService.getContent().then(contents => this.contents = contents).catch(content_service_1.ContentService.handleError);
+    getArticles() {
+        this.articleService.getArticle().then(articles => this.articles = articles).catch(article_service_1.ArticleService.handleError);
     }
-    onSelect(content) {
-        this.selectedContent = content;
+    onSelect(article) {
+        this.selectedArticle = article;
     }
     gotoDetail() {
-        this.router.navigate(['/detail', this.selectedContent.id]);
+        this.router.navigate(['/detail', this.selectedArticle.id]);
     }
     static handleError(error) {
         console.error('An error occurred', error);
         return Promise.reject(error.message || error);
     }
 };
-ContentsComponent = __decorate([
+ArticlesComponent = __decorate([
     core_1.Component({
-        selector: 'contents',
-        templateUrl: 'app/schedule/contents.component.html'
+        selector: 'articles',
+        templateUrl: 'app/content/articles.component.html'
     }), 
-    __metadata('design:paramtypes', [(typeof (_a = typeof router_1.Router !== 'undefined' && router_1.Router) === 'function' && _a) || Object, content_service_1.ContentService])
-], ContentsComponent);
-exports.ContentsComponent = ContentsComponent;
+    __metadata('design:paramtypes', [(typeof (_a = typeof router_1.Router !== 'undefined' && router_1.Router) === 'function' && _a) || Object, article_service_1.ArticleService])
+], ArticlesComponent);
+exports.ArticlesComponent = ArticlesComponent;
 var _a;
-//# sourceMappingURL=contents.component.js.map
+//# sourceMappingURL=articles.component.js.map

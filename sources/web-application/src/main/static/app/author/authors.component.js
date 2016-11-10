@@ -41,7 +41,7 @@ let AuthorsComponent = class AuthorsComponent {
 AuthorsComponent = __decorate([
     core_1.Component({
         selector: 'authors',
-        templateUrl: 'app/schedule/authors.component.html'
+        templateUrl: 'app/author/authors.component.html'
     }), 
     __metadata('design:paramtypes', [(typeof (_a = typeof router_1.Router !== 'undefined' && router_1.Router) === 'function' && _a) || Object, author_service_1.AuthorService])
 ], AuthorsComponent);

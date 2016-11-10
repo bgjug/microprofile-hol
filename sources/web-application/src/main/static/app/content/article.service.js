@@ -12,7 +12,7 @@ const core_1 = require("@angular/core");
 const http_1 = require("@angular/http");
 require("../rxjs-operators");
 const endpoints_service_1 = require("../shared/endpoints.service");
-let ContentService = class ContentService {
+let ArticleService = class ArticleService {
     constructor(http, endpointsService) {
         this.http = http;
         this.endpointsService = endpointsService;
@@ -22,34 +22,34 @@ let ContentService = class ContentService {
             callback();
         }
         else {
-            this.endpointsService.getEndpoint("content").then(endPoint => this.setEndpoint(endPoint)).then(callback).catch(this.handleError);
+            this.endpointsService.getEndpoint("article").then(endPoint => this.setEndpoint(endPoint)).then(callback).catch(this.handleError);
         }
     }
     setEndpoint(endPoint) {
         this.endPoint = endPoint;
     }
-    getContent() {
-        if (undefined != this.contents) {
-            return Promise.resolve(this.contents);
+    getArticle() {
+        if (undefined != this.articles) {
+            return Promise.resolve(this.articles);
         }
         return this.http.get(this.endPoint.url + '/all')
             .toPromise()
-            .then(response => this.setContent(response.json()))
+            .then(response => this.setArticle(response.json()))
             .catch(this.handleError);
     }
-    setContent(any) {
-        this.contents = any;
-        return this.contents;
+    setArticle(any) {
+        this.articles = any;
+        return this.articles;
     }
     handleError(error) {
         console.error('An error occurred', error);
         return Promise.reject(error.message || error);
     }
 };
-ContentService = __decorate([
+ArticleService = __decorate([
     core_1.Injectable(), 
     __metadata('design:paramtypes', [(typeof (_a = typeof http_1.Http !== 'undefined' && http_1.Http) === 'function' && _a) || Object, (typeof (_b = typeof endpoints_service_1.EndpointsService !== 'undefined' && endpoints_service_1.EndpointsService) === 'function' && _b) || Object])
-], ContentService);
-exports.ContentService = ContentService;
+], ArticleService);
+exports.ArticleService = ArticleService;
 var _a, _b;
-//# sourceMappingURL=content.service.js.map
+//# sourceMappingURL=article.service.js.map
