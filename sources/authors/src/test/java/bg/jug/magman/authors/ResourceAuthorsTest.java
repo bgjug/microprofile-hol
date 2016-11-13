@@ -50,15 +50,6 @@ public class ResourceAuthorsTest {
                 .addPackage("bg.jug.magman.authors.rest");
     }
 
-    @Before
-    public void init() throws Exception{
-        final ObjectMapper om = new ObjectMapper();
-        final InputStream is = this.getClass().getResourceAsStream("/authors.json");
-        final Set<Author> authors = om.readValue(is, new TypeReference<Set<Author>>() {
-        });
-        authors.forEach(e->authorDAO.addAuthor(e));
-    }
-
     @ArquillianResource
     private URL url;
 

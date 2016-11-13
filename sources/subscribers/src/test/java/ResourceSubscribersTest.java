@@ -46,17 +46,6 @@ public class ResourceSubscribersTest {
                 .addPackage("bg.jug.magman.subscribers.rest");
     }
 
-    @Before
-    public void init() throws Exception {
-        final ObjectMapper om = new ObjectMapper();
-        om.findAndRegisterModules();
-        om.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-        final InputStream is = this.getClass().getResourceAsStream("/subscribers.json");
-        final Set<Subscriber> subscribers = om.readValue(is, new TypeReference<Set<Subscriber>>() {
-        });
-        subscribers.forEach(e -> subscribersDAO.addSubscriber(e));
-    }
-
     //@ArquillianResource URL url;
 
     @Test

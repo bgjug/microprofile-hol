@@ -82,9 +82,9 @@ public class ResourceSubscribers {
                 .add("email", subscriber.getEmail())
                 .add("firstName", subscriber.getFirstName())
                 .add("lastName", subscriber.getLastName())
-                .add("subscribedUntil", subscriber.getSubscribedUntil().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+                .add("subscribedUntil", subscriber.getSubscribedUntil().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         if(subscriber.getId()!=null)
-                result.add("Id", subscriber.getId());
+                result.add("id", subscriber.getId());
         return result;
     }
 
@@ -100,6 +100,6 @@ public class ResourceSubscribers {
         JsonReader reader = Json.createReader(new StringReader(json));
         JsonObject subscriberObject = reader.readObject();
         reader.close();
-        return new Subscriber(Long.valueOf(subscriberObject.getString("Id")), subscriberObject.getString("FirstName"), subscriberObject.getString("LastName"), subscriberObject.getString("Email"), subscriberObject.getString("Address"), LocalDate.parse(subscriberObject.getString("SubscribedUntil"), DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+        return new Subscriber(Long.valueOf(subscriberObject.getString("id")), subscriberObject.getString("firstName"), subscriberObject.getString("lastName"), subscriberObject.getString("email"), subscriberObject.getString("address"), LocalDate.parse(subscriberObject.getString("subscribedUntil"), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
     }
 }

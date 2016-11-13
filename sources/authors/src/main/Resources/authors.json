@@ -3,16 +3,16 @@
     "id": 1,
     "firstName": "Ivan",
     "lastName": "Ivanov",
-    "address": "Sofia, Bulgaria",
     "email": "ivan@ivanov.com",
-    "subscribedUntil": "2011-12-03"
+    "regular": true,
+    "salary": 10000
   },
   {
     "id": 0,
     "firstName": "Dmitry",
     "lastName": "Alexandrov",
-    "address": "Sofia, Bulgaria",
     "email": "dmitry@alexandrov.com",
-    "subscribedUntil": "2011-12-03"
+    "regular": true,
+    "salary": 10000
   }
 ]

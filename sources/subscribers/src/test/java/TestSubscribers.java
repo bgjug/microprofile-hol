@@ -28,8 +28,8 @@ public class TestSubscribers {
         Assert.assertFalse("Failed to get any Subscribers", subscribers.isEmpty());
 
         for (final Subscriber subscriber : subscribers) {
-            Assert.assertNotNull(subscriber.getFirstName());
-            this.log.info(subscriber.toString());
+            Assert.assertNotNull(subscriber.getSubscribedUntil());
+            this.log.info(String.valueOf(subscriber.getSubscribedUntil()));
         }
     }
 }

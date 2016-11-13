@@ -106,6 +106,7 @@
                         <configuration>
                             <mainClass>fish.payara.micro.PayaraMicro</mainClass>
                             <arguments>
+                                <argument>--port 8081</argument>
                                 <argument>--noCluster</argument>
                                 <argument>--autoBindHttp</argument>
                                 <argument>--logo</argument>

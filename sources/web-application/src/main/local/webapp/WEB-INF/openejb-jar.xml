@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<openejb-jar>
-  <pojo-deployment class-name="org.tomitribe.tribestream.registryng.webapp.RegistryNgApplication">
-    <properties>
-        cxf.jaxrs.skip-provider-scanning = true
-        cxf.jaxrs.providers = org.tomitribe.tribestream.registryng.service.serialization.CustomJacksonJaxbJsonProvider,org.apache.openejb.server.cxf.rs.EJBAccessExceptionMapper
-    </properties>
-  </pojo-deployment>
-</openejb-jar>
