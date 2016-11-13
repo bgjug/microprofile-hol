@@ -47,7 +47,7 @@ public class AuthorDAO {
     }
 
     public List<Author> findRegularAuthors(){
-        return authors.values().stream().filter(e->e.isRegular()==true).collect(Collectors.toList());
+        return authors.values().stream().filter(Author::isRegular).collect(Collectors.toList());
     }
 
     public void addAuthor(Author author){
@@ -64,4 +64,16 @@ public class AuthorDAO {
     public void deleteAuthor(Long authorId){
         authors.remove(authorId);
     }
+
+    @PostConstruct
+    public void addTestData() {
+        Author bilboBaggins = new Author("Bilbo", "Baggins", "bilbo@shire.com", true, 1000);
+        Author spiderman = new Author("Spider", "Man", "spiderman@comics.com", false, 860);
+        Author captainPower = new Author("Captain", "Power", "power@futuresoldiers.com", true, 750);
+
+        addAuthor(bilboBaggins);
+        addAuthor(spiderman);
+        addAuthor(captainPower);
+    }
+
 }

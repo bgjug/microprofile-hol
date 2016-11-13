@@ -18,6 +18,7 @@ package bg.jug.magman.advertisers.dao;
 import bg.jug.magman.advertisers.domain.Advertiser;
 import bg.jug.magman.advertisers.domain.SponsorPackage;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,5 +77,18 @@ public class AdvertiserDAO {
 
     public void deleteAdvertiser(Long id) {
         advertisers.remove(id);
+    }
+
+    @PostConstruct
+    public void addTestData() {
+        Advertiser acme = new Advertiser("ACME Co", "www.acme.com", "management@acme.com", SponsorPackage.GOLD);
+        Advertiser jugg = new Advertiser("BG JUGG", "www.jugg.bg", "callme@jugg.bg", SponsorPackage.GOLD);
+        Advertiser jpream = new Advertiser("jPream", "www.jpream.io", "admin@jpream.io", SponsorPackage.SILVER);
+        Advertiser bestCompany = new Advertiser("Best Company", "www.bestcompany.java", "manager@bestcompany.java", SponsorPackage.BRONZE);
+
+        addAdvertiser(acme);
+        addAdvertiser(jugg);
+        addAdvertiser(jpream);
+        addAdvertiser(bestCompany);
     }
 }
