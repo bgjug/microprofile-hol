@@ -1,6 +1,7 @@
 package bg.jug.magman.domain;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Created by Dmitry Alexandrov on 19.10.16.
@@ -112,5 +113,17 @@ public class Subscriber {
         result = 31 * result + (address != null ? address.hashCode() : 0);
         result = 31 * result + (subscribedUntil != null ? subscribedUntil.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", address='" + address + '\'' +
+                ", subscribedUntil=" + subscribedUntil.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) +
+                '}';
     }
 }

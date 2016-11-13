@@ -33,4 +33,8 @@ public class AuthorsListBean {
     public void setAuthors(List<Author> authors) {
         this.authors = authors;
     }
+
+    public void removeAuthor(long id){
+        authorsClient.removeAuthor(id);
+    }
 }

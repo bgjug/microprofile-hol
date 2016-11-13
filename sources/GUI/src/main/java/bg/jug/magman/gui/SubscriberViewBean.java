@@ -6,35 +6,33 @@ import bg.jug.magman.domain.Subscriber;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
-import java.util.List;
 
 /**
  * Created by Dmitry Alexandrov on 13.11.16.
  */
 @ManagedBean
 @ViewScoped
-public class SubscribersListBean {
+public class SubscriberViewBean {
 
     @Inject
     private SubscribersClient subscribersClient;
 
-    private List<Subscriber> subscribers;
+    private Subscriber subscriber;
 
     @PostConstruct
     private void init() {
-        subscribers = subscribersClient.getAllSubscribers();
+        String value = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("id");
+        subscriber = subscribersClient.getSubscriberById(Long.valueOf(value));
     }
 
-    public List<Subscriber> getSubscribers() {
-        return subscribers;
+    public Subscriber getSubscriber() {
+        return subscriber;
     }
 
-    public void setSubscribers(List<Subscriber> subscribers) {
-        this.subscribers = subscribers;
+    public void setSubscriber(Subscriber subscriber) {
+        this.subscriber = subscriber;
     }
 
-    public void removeSubscriber(long id) {
-        subscribersClient.removeSubscriber(id);
-    }
 }

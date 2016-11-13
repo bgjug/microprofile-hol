@@ -110,7 +110,7 @@ public class Author implements Serializable {
 
     @Override
     public String toString() {
-        return "Author{" +
+        return "{" +
                 "id=" + id +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +

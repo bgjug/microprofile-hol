@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -39,6 +40,58 @@ public class SubscribersClient {
         } catch (Exception e) {
             e.printStackTrace();
             return new ArrayList<>(0);
+        }
+    }
+
+    public Subscriber getSubscriberById(long id) {
+        try {
+            URL obj = new URL(ENDPOINT_URL + "/findById/" + id);
+            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+            con.setRequestMethod("GET");
+            int responseCode = con.getResponseCode();
+            System.out.println("Response code -> " + responseCode);
+
+            final ObjectMapper om = new ObjectMapper();
+            om.findAndRegisterModules();
+            om.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+            final InputStream is = con.getInputStream();
+            final Subscriber subscriber = om.readValue(is, new TypeReference<Subscriber>() {
+            });
+            return subscriber;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public void removeSubscriber(long id) {
+        try {
+            URL obj = new URL(ENDPOINT_URL + "/delete/" + id);
+            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+            con.setRequestMethod("DELETE");
+            int responseCode = con.getResponseCode();
+            System.out.println("Response code -> " + responseCode);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void addSubscriber(Subscriber subscriber) {
+        try {
+            URL url = new URL(ENDPOINT_URL + "/add");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setConnectTimeout(5000);
+            conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+            conn.setDoOutput(true);
+            conn.setDoInput(true);
+            conn.setRequestMethod("POST");
+
+            OutputStream os = conn.getOutputStream();
+            os.write(subscriber.toString().getBytes("UTF-8"));
+            os.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
