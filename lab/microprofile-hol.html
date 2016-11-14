@@ -855,9 +855,141 @@ Besides the solution for the current version of the lab, it contains other featu
 <div class="sect1">
 <h2 id="_core_micro_profile_technologies">Core Micro Profile technologies</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>In this chapter of the lab we are going to see how we can implement basic business functionality using the three MicroProfile 1.0 technologies:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>CDI</p>
+</li>
+<li>
+<p>JAX-RS</p>
+</li>
+<li>
+<p>JSON-P</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>We assume that you have some basic knowledge about Java EE, but if you don&#8217;t, don&#8217;t worry.
+You&#8217;ll be able to follow along.</p>
+</div>
+<div class="paragraph">
+<p>We&#8217;ll start with adding a data access object with a method that returns all the available records of a given resource.
+Then we&#8217;ll make sure that this is exposed as a RESTful webservice.
+Finally we&#8217;ll show you how you can transform the Java representation of the domain object to JSON.</p>
+</div>
 <div class="sect2">
 <h3 id="_dependency_injection_and_object_lifecycle">Dependency Injection and object lifecycle</h3>
+<div class="paragraph">
+<p>The first thing we&#8217;ll do is to create the data access object for the authors, make it return all the authors and inject it in <code>ResourceAuthor</code>.</p>
+</div>
+<div class="paragraph">
+<p>Go to the <em>authors</em> project in your IDE and under the <code>bg.jug.magman.authors</code> package create the package <code>persistence</code>.
+Inside the newly created package add the following class:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@javax</span>.enterprise.context.ApplicationScoped
+<span class="directive">public</span> <span class="type">class</span> <span class="class">AuthorsDAO</span> {
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The annotation (you may add its package as import instead) makes sure that the CDI container will create only one instance of the above class (we&#8217;ll use the term <em>bean</em> from now on).
+Now let&#8217;s add the retrieve method.
+For the time being it will return hard coded data:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@ApplicationScoped</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">AuthorsDAO</span> {
+    <span class="predefined-type">ArrayList</span>&lt;Author&gt; authors = <span class="keyword">new</span> <span class="predefined-type">ArrayList</span>&lt;&gt;();
+    Author bilboBaggins = <span class="keyword">new</span> Author(<span class="string"><span class="delimiter">&quot;</span><span class="content">Bilbo</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Baggins</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">bilbo@shire.com</span><span class="delimiter">&quot;</span></span>, <span class="predefined-constant">true</span>, <span class="integer">1000</span>);
+    Author spiderman = <span class="keyword">new</span> Author(<span class="string"><span class="delimiter">&quot;</span><span class="content">Spider</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Man</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">spiderman@comics.com</span><span class="delimiter">&quot;</span></span>, <span class="predefined-constant">false</span>, <span class="integer">860</span>);
+    Author captainPower = <span class="keyword">new</span> Author(<span class="string"><span class="delimiter">&quot;</span><span class="content">Captain</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Power</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">power@futuresoldiers.com</span><span class="delimiter">&quot;</span></span>, <span class="predefined-constant">true</span>, <span class="integer">750</span>);
 
+    authors.add(bilboBaggins);
+    authors.add(spiderman);
+    authors.add(captainPower);
+
+    <span class="keyword">return</span> authors;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Finally, let&#8217;s inject this bean into our resource class.
+If you still don&#8217;t understand the role of <code>ResourceAuthors</code>, bear with us.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> <span class="type">class</span> <span class="class">ResourceAuthors</span> {
+
+    <span class="annotation">@Inject</span>
+    <span class="directive">private</span> AuthorsDAO authorsDAO;
+
+    <span class="directive">public</span> <span class="predefined-type">String</span> getAuthors() {
+        <span class="keyword">return</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">authors</span><span class="delimiter">&quot;</span></span>;
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Make sure that you import the missing types.</p>
+</div>
+<div class="paragraph">
+<p>What the above construction does is telling the CDI container when creating the <code>ResourceAuthors</code> class, to inject that single instance of <code>AuthorsDAO</code>.</p>
+</div>
+<div class="paragraph">
+<p>So far so good. Before we proceed to the next section, let&#8217;s do together the <code>ArticlesDAO</code> (in the <em>Content</em> microservice):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">package</span> <span class="namespace">bg.jug.magman.content.persistence</span>;
+
+<span class="annotation">@ApplicationScoped</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">ArticleDAO</span> {
+
+    <span class="directive">public</span> <span class="predefined-type">List</span>&lt;Article&gt; getAllArticles() {
+        <span class="predefined-type">List</span>&lt;Article&gt; articles = <span class="keyword">new</span> <span class="predefined-type">ArrayList</span>&lt;&gt;();
+        Article article1 = <span class="keyword">new</span> Article(<span class="string"><span class="delimiter">&quot;</span><span class="content">Bulgarian JUG’s 2015</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">2015 is over and 2016 is a week old now. However, I can’t forget the past year, which happened to be the most active one for the Bulgarian JUG, where I happen to be one of the co-leads. And what a year it was! We had everything: seminar talks with local and foreign speakers, hands on labs, Adopt OpenJDK and Adopt a JSR hackathons, a code retreat and a big international conference. In this blog post I will briefly go through all the events that kept our community busy in 2015.</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Bilbo Baggins</span><span class="delimiter">&quot;</span></span>);
+        Article article2 = <span class="keyword">new</span> Article(<span class="string"><span class="delimiter">&quot;</span><span class="content">Primitives in Generics, part 3</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">In the Bulgarian JUG we had an event dedicated to trying out the OpenJDK Valhalla project’s achievements in the area of using primitive parameters of generics. Our colleague and blogger Mihail Stoynov already wrote about our workshop. I decided, though, to go in a little bit more details and explain the various aspects of the feature.</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Spider Man</span><span class="delimiter">&quot;</span></span>);
+        Article article3 = <span class="keyword">new</span> Article(<span class="string"><span class="delimiter">&quot;</span><span class="content">Primitives in Generics, part 2</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Whenever the OpenJDK developers want to experiment with a concept they first create a dedicated OpenJDK project for that. This project usually has its own source repository, which is a fork of the OpenJDK sources. It has its page and mailing list and its main purpose is to experiment with ideas for implementing the new concept before creating the Java Enhancement Proposals (JEPs), the Java Specification Requests (JSRs) and committing source code in the real repositories. Features like lambdas, script engine support, method handles and invokedynamic walked this way before entering the official Java release.</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Spider Man</span><span class="delimiter">&quot;</span></span>);
+        Article article4 = <span class="keyword">new</span> Article(<span class="string"><span class="delimiter">&quot;</span><span class="content">Primitives in Generics, part 1</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Java generics is one of its most widely commented topics. While the discussion whether they should be reified, i.e. the generic parameter information is not erased by javac, is arguably the hottest topic for years now, the lack of support for primitives as parameter types is something that at least causes some confusion. It leads to applying unnecessary boxing when for example you want to put an int into a List (read on to find out about the performance penalty). It also leads to adding “companion” classes in most of the generic APIs, like IntStream and LongStream for example.</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Spider Man</span><span class="delimiter">&quot;</span></span>);
+        Article article5 = <span class="keyword">new</span> Article(<span class="string"><span class="delimiter">&quot;</span><span class="content">JavaOne, day 4</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">The last day at JavaOne started as usual with the community keynote. I didn’t go to it, because I wanted to have a rest after the Aerosmith and Macklemore &amp; Ryan Lewis concert last night and also wanted to catch up with my blogs. However, the people that I follow on twitter were kind enough to update me with the most interesting bits of the session. Additionally, there’s already a blog from Ben Evans about it.</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Captain Power</span><span class="delimiter">&quot;</span></span>);
+        Article article6 = <span class="keyword">new</span> Article(<span class="string"><span class="delimiter">&quot;</span><span class="content">JavaOne days two and three</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">In March this year I had great time at the JavaLand conference. Along with other great people, I met there the freelancer and blog author Roberto Cortez. He told me that he is going to send a few session proposals to JavaOne and asked me whether I wanted to join him for the Java EE Batch talk. I hadn’t heard much about that topic at that time, but I agreed. Then the proposal got accepted and here I am at JavaOne now. What do you know</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Captain Power</span><span class="delimiter">&quot;</span></span>);
+
+        articles.add(article1);
+        articles.add(article2);
+        articles.add(article3);
+        articles.add(article4);
+        articles.add(article5);
+        articles.add(article6);
+
+        <span class="keyword">return</span> articles;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And let&#8217;s inject it in the <code>ContentResource</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> <span class="type">class</span> <span class="class">ContentResource</span> {
+
+    <span class="annotation">@Inject</span>
+    <span class="directive">private</span> ArticleDAO articleDAO;
+
+    <span class="directive">public</span> <span class="predefined-type">String</span> getArticles() {
+        <span class="keyword">return</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">articles</span><span class="delimiter">&quot;</span></span>;
+    }
+
+}</code></pre>
+</div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_exposure_to_clients">Exposure to clients</h3>
