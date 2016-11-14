@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+</h:head>
+<h:body>
+    <p:graphicImage url="resources/microprofile.png"/>
+    <h1>Microprofile Hands On Lab </h1>
+
+    <h2>Add Article</h2>
+    <h:form>
+
+        <h:panelGrid columns="2">
+            <p:outputLabel value="Author"/>
+            <p:selectOneListbox value="#{articleAddBean.article.author}">
+                <f:selectItems value="#{authorsListBean.authors}" var="item" itemValue="#{item.firstName} #{item.lastName}"
+                               itemLabel="#{item.firstName} #{item.lastName}"/>
+            </p:selectOneListbox>
+
+            <p:outputLabel value="Content"/>
+            <p:inputTextarea value="#{articleAddBean.article.content}"/>
+
+            <p:commandButton value="Add Article" action="#{articleAddBean.addArticle}"/>
+        </h:panelGrid>
+
+    </h:form>
+
+</h:body>
+</html>

@@ -23,14 +23,14 @@ public class ResourceAuthors {
     private AuthorDAO authorDAO;
 
     @GET
-    @Path("/findAll")
+    @Path("/")
     @Produces("application/json")
     public Response getAuthors() {
         return Response.ok(buildAuthorJsonArray(authorDAO.getAuthors()).build()).build();
     }
 
     @GET
-    @Path("/findById/{id}")
+    @Path("/{id}")
     @Produces("application/json")
     public Response findAuthorById(@PathParam("id") Long authorId) {
         return Response.ok(buildAuthorJson(authorDAO.findAuthorById(authorId)).build()).build();
@@ -52,7 +52,7 @@ public class ResourceAuthors {
     }
 
     @POST
-    @Path("/add")
+    @Path("/")
     public void addAuthor(@QueryParam("Author") String author) {
         authorDAO.addAuthor(readAuthorFromJson(author));
     }
@@ -64,7 +64,7 @@ public class ResourceAuthors {
     }
 
     @DELETE
-    @Path("/delete/{id}")
+    @Path("/{id}")
     public void deleteAuthor(@PathParam("id") Long authorId) {
         authorDAO.deleteAuthor(authorId);
     }

@@ -52,7 +52,7 @@ public class ResourceSubscribersTest {
     @RunAsClient
     public void testGet() {
         final Client client = ClientBuilder.newBuilder().build();
-        WebTarget target = client.target("/findAll");
+        WebTarget target = client.target("/");
         final Set<Subscriber> subscribers = target
                 .request(MediaType.APPLICATION_JSON_TYPE)
                 .get(new GenericType<Set<Subscriber>>() {

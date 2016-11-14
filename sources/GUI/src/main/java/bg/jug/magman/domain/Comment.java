@@ -19,7 +19,7 @@ import javax.json.*;
 import java.io.StringReader;
 import java.util.Objects;
 
-public class Comment implements Jsonable {
+public class Comment {
 
     private Long id;
     private String author;
@@ -78,33 +78,9 @@ public class Comment implements Jsonable {
 
     @Override
     public String toString() {
-        return "Comment{" +
+        return "{" +
                 "author='" + author + '\'' +
                 ", content='" + content + '\'' +
                 '}';
-    }
-
-    public static Comment fromJson(String jsonString) {
-        JsonReader reader = Json.createReader(new StringReader(jsonString));
-        JsonObject jsonObject = reader.readObject();
-
-        Comment comment = new Comment();
-        JsonNumber jsonId = jsonObject.getJsonNumber("id");
-        if (jsonId != null) {
-            comment.id = jsonId.longValue();
-        }
-        comment.author = jsonObject.getString("author");
-        comment.content = jsonObject.getString("content");
-
-        return comment;
-    }
-
-    public JsonObject toJson() {
-        JsonObjectBuilder builder = Json.createObjectBuilder();
-        builder.add("id", id);
-        builder.add("author", author);
-        builder.add("content", content);
-
-        return builder.build();
     }
 }

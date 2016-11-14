@@ -3,6 +3,7 @@ package bg.jug.magman.gui;
 import bg.jug.magman.clients.SubscribersClient;
 import bg.jug.magman.domain.Subscriber;
 
+import javax.enterprise.inject.Model;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
@@ -10,8 +11,7 @@ import javax.inject.Inject;
 /**
  * Created by Dmitry Alexandrov on 13.11.16.
  */
-@ManagedBean
-@ViewScoped
+@Model
 public class SubscriberAddBean {
 
     @Inject

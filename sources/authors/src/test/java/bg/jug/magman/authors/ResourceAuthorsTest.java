@@ -56,12 +56,13 @@ public class ResourceAuthorsTest {
     @Test
     @RunAsClient
     public void testGet() {
-        final Set<Author> authors = this.getWebTarget("findAll")
+
+        final Set<Author> authors = this.getWebTarget("/")
                 .request(MediaType.APPLICATION_JSON_TYPE)
                 .get(new GenericType<Set<Author>>() {
                 });
 
-        Assert.assertTrue(authors.size()==2);
+        Assert.assertTrue(authors.size()==3);
         authors.forEach(e->this.log.info("Listed: " + e.getFirstName() + " " + e.getLastName()));
     }
 

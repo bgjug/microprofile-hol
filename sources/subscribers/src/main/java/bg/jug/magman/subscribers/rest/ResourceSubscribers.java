@@ -26,14 +26,14 @@ public class ResourceSubscribers {
     private SubscribersDAO subscribersDAO;
 
     @GET
-    @Path("/findAll")
+    @Path("/")
     @Produces("application/json")
     public Response getSubscribers() {
         return Response.ok(buildSubscriberJsonArray(subscribersDAO.getSubscribers()).build()).build();
     }
 
     @GET
-    @Path("/findById/{id}")
+    @Path("/{id}")
     @Produces("application/json")
     public Response findSubscriberById(@PathParam("id") Long subscriberId) {
         return Response.ok(buildSubscriberJson(subscribersDAO.findSubscriberById(subscriberId)).build()).build();
@@ -47,14 +47,14 @@ public class ResourceSubscribers {
     }
 
     @POST
-    @Path("/add")
+    @Path("/")
     public void addSubscriber(@QueryParam("Subscriber") String subscriberString) {
         Subscriber subscriber = readSubscriberFromJson(subscriberString);
         subscribersDAO.addSubscriber(subscriber);
     }
 
     @PUT
-    @Path("/update")
+    @Path("/")
     public void updateSubscriber(@QueryParam("Subscriber") String subscriberString) {
         Subscriber subscriber = readSubscriberFromJson(subscriberString);
         subscribersDAO.updateSubscriber(subscriber);
@@ -69,7 +69,7 @@ public class ResourceSubscribers {
     }
 
     @DELETE
-    @Path("/delete/{id}")
+    @Path("/{id}")
     public void deleteSubscriber(@PathParam("id") Long subscriberId) {
         subscribersDAO.deleteSubscriber(subscriberId);
     }

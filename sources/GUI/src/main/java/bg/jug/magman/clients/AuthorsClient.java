@@ -24,7 +24,7 @@ public class AuthorsClient {
 
     public List<Author> getAllAuthors() {
         try {
-            URL obj = new URL(ENDPOINT_URL + "/findAll");
+            URL obj = new URL(ENDPOINT_URL + "/");
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
             con.setRequestMethod("GET");
             int responseCode = con.getResponseCode();
@@ -46,7 +46,7 @@ public class AuthorsClient {
 
     public Author getAuthorById(long id) {
         try {
-            URL obj = new URL(ENDPOINT_URL + "/findById/" + id);
+            URL obj = new URL(ENDPOINT_URL + "/" + id);
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
             con.setRequestMethod("GET");
             int responseCode = con.getResponseCode();
@@ -67,7 +67,7 @@ public class AuthorsClient {
 
     public void removeAuthor(long id) {
         try {
-            URL obj = new URL(ENDPOINT_URL + "/delete/" + id);
+            URL obj = new URL(ENDPOINT_URL + "/" + id);
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
             con.setRequestMethod("DELETE");
             int responseCode = con.getResponseCode();

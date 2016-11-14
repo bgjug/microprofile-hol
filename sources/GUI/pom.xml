@@ -96,7 +96,7 @@
                     <tomeeHttpPort>${uiPort}</tomeeHttpPort>
                     <tomeeAjpPort>9991</tomeeAjpPort>
                     <tomeeShutdownPort>9992</tomeeShutdownPort>
-                    <tomeeClassifier>webprofile</tomeeClassifier>
+                    <tomeeClassifier>plume</tomeeClassifier>
                 </configuration>
             </plugin>
             <plugin>

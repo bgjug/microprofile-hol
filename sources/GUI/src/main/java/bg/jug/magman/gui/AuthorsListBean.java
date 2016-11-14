@@ -4,15 +4,17 @@ import bg.jug.magman.clients.AuthorsClient;
 import bg.jug.magman.domain.Author;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.inject.Model;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.List;
 
 /**
  * Created by Dmitry Alexandrov on 13.11.16.
  */
-@ManagedBean
+@Model
 @ViewScoped
 public class AuthorsListBean {
 

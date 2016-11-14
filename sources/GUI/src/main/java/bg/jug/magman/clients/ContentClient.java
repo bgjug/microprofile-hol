@@ -1,6 +1,8 @@
 package bg.jug.magman.clients;
 
-import bg.jug.magman.domain.Subscriber;
+import bg.jug.magman.domain.Advertiser;
+import bg.jug.magman.domain.Article;
+import bg.jug.magman.domain.Comment;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -15,14 +17,14 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Created by Dmitry Alexandrov on 13.11.16.
+ * Created by Dmitry Alexandrov on 14.11.16.
  */
 @ApplicationScoped
-public class SubscribersClient {
+public class ContentClient {
 
-    private static String ENDPOINT_URL = "http://localhost:9130/subscribers";
+    private static String ENDPOINT_URL = "http://localhost:9080/content";
 
-    public List<Subscriber> getAllSubscribers() {
+    public List<Article> getAllArticles() {
         try {
             URL obj = new URL(ENDPOINT_URL + "/");
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -34,16 +36,16 @@ public class SubscribersClient {
             om.findAndRegisterModules();
             om.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
             final InputStream is = con.getInputStream();
-            final Set<Subscriber> subscribers = om.readValue(is, new TypeReference<Set<Subscriber>>() {
+            final Set<Article> articles = om.readValue(is, new TypeReference<Set<Article>>() {
             });
-            return new ArrayList<>(subscribers);
+            return new ArrayList<>(articles);
         } catch (Exception e) {
             e.printStackTrace();
             return new ArrayList<>(0);
         }
     }
 
-    public Subscriber getSubscriberById(long id) {
+    public Article getArticleById(long id) {
         try {
             URL obj = new URL(ENDPOINT_URL + "/" + id);
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -55,16 +57,16 @@ public class SubscribersClient {
             om.findAndRegisterModules();
             om.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
             final InputStream is = con.getInputStream();
-            final Subscriber subscriber = om.readValue(is, new TypeReference<Subscriber>() {
+            final Article article = om.readValue(is, new TypeReference<Article>() {
             });
-            return subscriber;
+            return article;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
 
-    public void removeSubscriber(long id) {
+    public void removeArticle(long id) {
         try {
             URL obj = new URL(ENDPOINT_URL + "/" + id);
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -77,9 +79,27 @@ public class SubscribersClient {
         }
     }
 
-    public void addSubscriber(Subscriber subscriber) {
+    public void addArticle(Article article) {
         try {
             URL url = new URL(ENDPOINT_URL + "/");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setConnectTimeout(5000);
+            conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+            conn.setDoOutput(true);
+            conn.setDoInput(true);
+            conn.setRequestMethod("PUT");
+
+            OutputStream os = conn.getOutputStream();
+            os.write(article.toString().getBytes("UTF-8"));
+            os.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void addCommentToArticle(Comment comment, Article article){
+        try {
+            URL url = new URL(ENDPOINT_URL + "/"+article.getId()+"/comment");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setConnectTimeout(5000);
             conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
@@ -88,7 +108,7 @@ public class SubscribersClient {
             conn.setRequestMethod("POST");
 
             OutputStream os = conn.getOutputStream();
-            os.write(subscriber.toString().getBytes("UTF-8"));
+            os.write(comment.toString().getBytes("UTF-8"));
             os.close();
         } catch (Exception e) {
             e.printStackTrace();

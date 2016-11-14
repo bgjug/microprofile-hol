@@ -1,5 +1,6 @@
 package bg.jug.magman.clients;
 
+import bg.jug.magman.domain.Advertiser;
 import bg.jug.magman.domain.Subscriber;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,14 +16,14 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Created by Dmitry Alexandrov on 13.11.16.
+ * Created by Dmitry Alexandrov on 14.11.16.
  */
 @ApplicationScoped
-public class SubscribersClient {
+public class AdvertisersClient {
 
-    private static String ENDPOINT_URL = "http://localhost:9130/subscribers";
+    private static String ENDPOINT_URL = "http://localhost:9100/advertiser";
 
-    public List<Subscriber> getAllSubscribers() {
+    public List<Advertiser> getAllAdvertisers() {
         try {
             URL obj = new URL(ENDPOINT_URL + "/");
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -34,16 +35,16 @@ public class SubscribersClient {
             om.findAndRegisterModules();
             om.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
             final InputStream is = con.getInputStream();
-            final Set<Subscriber> subscribers = om.readValue(is, new TypeReference<Set<Subscriber>>() {
+            final Set<Advertiser> advertisers = om.readValue(is, new TypeReference<Set<Advertiser>>() {
             });
-            return new ArrayList<>(subscribers);
+            return new ArrayList<>(advertisers);
         } catch (Exception e) {
             e.printStackTrace();
             return new ArrayList<>(0);
         }
     }
 
-    public Subscriber getSubscriberById(long id) {
+    public Advertiser getAdvertiserById(long id) {
         try {
             URL obj = new URL(ENDPOINT_URL + "/" + id);
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -55,16 +56,16 @@ public class SubscribersClient {
             om.findAndRegisterModules();
             om.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
             final InputStream is = con.getInputStream();
-            final Subscriber subscriber = om.readValue(is, new TypeReference<Subscriber>() {
+            final Advertiser advertiser = om.readValue(is, new TypeReference<Advertiser>() {
             });
-            return subscriber;
+            return advertiser;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
 
-    public void removeSubscriber(long id) {
+    public void removeAdvertiser(long id) {
         try {
             URL obj = new URL(ENDPOINT_URL + "/" + id);
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -77,7 +78,7 @@ public class SubscribersClient {
         }
     }
 
-    public void addSubscriber(Subscriber subscriber) {
+    public void addAdvertiser(Advertiser advertiser) {
         try {
             URL url = new URL(ENDPOINT_URL + "/");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -88,7 +89,7 @@ public class SubscribersClient {
             conn.setRequestMethod("POST");
 
             OutputStream os = conn.getOutputStream();
-            os.write(subscriber.toString().getBytes("UTF-8"));
+            os.write(advertiser.toString().getBytes("UTF-8"));
             os.close();
         } catch (Exception e) {
             e.printStackTrace();

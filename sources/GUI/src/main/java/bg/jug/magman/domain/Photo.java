@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class Photo implements Jsonable {
+public class Photo {
 
     private Long id;
     private File photoLocation;
@@ -97,33 +97,10 @@ public class Photo implements Jsonable {
 
     @Override
     public String toString() {
-        return "Photo{" +
+        return "{" +
                 "author='" + author + '\'' +
                 ", tags=" + tags +
                 '}';
     }
 
-    public static Photo fromJson(String jsonString) {
-        JsonReader reader = Json.createReader(new StringReader(jsonString));
-        JsonObject jsonObject = reader.readObject();
-
-        Photo photo = new Photo();
-        photo.id = jsonObject.getJsonNumber("id").longValue();
-        photo.author = jsonObject.getString("author");
-        photo.tags = jsonObject.getJsonArray("tags").stream()
-                .map(jsonValue -> ((JsonString) jsonValue).getString())
-                .collect(Collectors.toList());
-
-        return photo;
-    }
-
-    public JsonObject toJson() {
-        JsonObjectBuilder photoJson = Json.createObjectBuilder();
-        photoJson.add("id", id);
-        photoJson.add("author", author);
-        JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
-        tags.forEach(arrayBuilder::add);
-        photoJson.add("tags", arrayBuilder.build());
-        return photoJson.build();
-    }
 }

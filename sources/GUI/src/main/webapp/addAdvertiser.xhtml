@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+</h:head>
+<h:body>
+    <p:graphicImage url="resources/microprofile.png"/>
+    <h1>Microprofile Hands On Lab </h1>
+
+    <h2>Add Advertiser</h2>
+    <h:form>
+
+        <h:panelGrid columns="2">
+            <p:outputLabel value="Name"/>
+            <p:inputText value="#{advertiserAddBean.advertiser.name}"/>
+
+            <p:outputLabel value="Contact Email"/>
+            <p:inputText value="#{advertiserAddBean.advertiser.contactEmail}"/>
+
+            <p:outputLabel value="Website"/>
+            <p:inputText value="#{advertiserAddBean.advertiser.website}"/>
+
+            <p:outputLabel value="Sponsor package"/>
+            <p:selectOneListbox value="#{advertiserAddBean.advertiser.sponsorPackage}">
+                <f:selectItems value="#{advertiserAddBean.allPackages}"/>
+            </p:selectOneListbox>
+
+
+            <p:commandButton value="Add Advertiser" action="#{authorAddBean.addAuthor}"/>
+        </h:panelGrid>
+
+    </h:form>
+
+</h:body>
+</html>

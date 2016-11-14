@@ -19,15 +19,11 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Objects;
-
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
 public class Advertiser {
     private Long id;
     private String name;
     private String website;
     private String contactEmail;
-    // TODO private byte[] logo;
     private SponsorPackage sponsorPackage;
 
     public Advertiser() {
@@ -103,7 +99,7 @@ public class Advertiser {
 
     @Override
     public String toString() {
-        return "Advertiser{" +
+        return "{" +
                 "name='" + name + '\'' +
                 ", website='" + website + '\'' +
                 ", contactEmail='" + contactEmail + '\'' +
