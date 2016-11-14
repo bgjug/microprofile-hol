@@ -1,0 +1,7 @@
+== Core Micro Profile technologies
+
+=== Dependency Injection and object lifecycle
+
+=== Exposure to clients
+
+=== Communication format

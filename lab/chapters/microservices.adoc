@@ -1,0 +1,21 @@
+== Micro Services Enablement
+
+=== Make jar, not war
+
+==== WildFly Swarm
+
+==== Apache TomEE
+
+==== IBM Liberty Profile
+
+==== Payara Micro
+
+=== Running on non-default HTTP port
+
+==== WildFly Swarm
+
+==== Apache TomEE
+
+==== IBM Liberty Profile
+
+==== Payara Micro

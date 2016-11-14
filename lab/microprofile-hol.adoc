@@ -1,0 +1,19 @@
+= Micro Profile Hands on Lab
+Dmitry Alexandrov, Ivan St. Ivanov
+v0.9, 15 November 2016
+:doctype: book
+:toc:
+:toclevels: 3
+:imagesdir: images
+:source-highlighter: coderay
+:icons: font
+
+include::chapters/introduction.adoc[]
+
+include::chapters/core.adoc[]
+
+include::chapters/microservices.adoc[]
+
+include::chapters/persistence.adoc[]
+
+include::chapters/additional.adoc[]
