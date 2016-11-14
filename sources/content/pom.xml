@@ -81,6 +81,9 @@
                     </assemblyArtifact>
                     <userDirectory>${project.build.directory}</userDirectory>
                     <serverName>contentServer</serverName>
+                    <bootstrapProperties>
+                        <default.http.port>${contentPort}</default.http.port>
+                    </bootstrapProperties>
                 </configuration>
             </plugin>
         </plugins>

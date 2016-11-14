@@ -17,3 +17,4 @@ docs/reference/src/main/docbook/en-US/version_info.xml
 atlassian-ide-plugin.xml
 .externalToolBuilders
 phantomjsdriver.log
+.distribution

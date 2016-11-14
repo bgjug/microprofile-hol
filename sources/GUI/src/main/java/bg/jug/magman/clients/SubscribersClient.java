@@ -20,7 +20,7 @@ import java.util.Set;
 @ApplicationScoped
 public class SubscribersClient {
 
-    private static String ENDPOINT_URL = "http://localhost:8081/subscribers";
+    private static String ENDPOINT_URL = "http://localhost:9130/subscribers";
 
     public List<Subscriber> getAllSubscribers() {
         try {

@@ -95,8 +95,17 @@
                 <groupId>org.apache.tomee.maven</groupId>
                 <artifactId>tomee-maven-plugin</artifactId>
                 <version>${version.tomee}</version>
+                <executions>
+                    <execution>
+                        <id>build-exec</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
-                    <tomeeHttpPort>8082</tomeeHttpPort>
+                    <tomeeHttpPort>${authorsPort}</tomeeHttpPort>
                     <tomeeClassifier>webprofile</tomeeClassifier>
                 </configuration>
             </plugin>

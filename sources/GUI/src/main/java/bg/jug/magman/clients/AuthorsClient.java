@@ -20,7 +20,7 @@ import java.util.Set;
 @ApplicationScoped
 public class AuthorsClient {
 
-    private static String ENDPOINT_URL = "http://localhost:8082/authors";
+    private static String ENDPOINT_URL = "http://localhost:9110/authors";
 
     public List<Author> getAllAuthors() {
         try {
