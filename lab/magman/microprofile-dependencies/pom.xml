@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <properties>
+        <cdi-version>1.2</cdi-version>
+        <jaxrs-version>2.0.1</jaxrs-version>
+        <jsonp-version>1.0</jsonp-version>
+    </properties>
+    <parent>
+        <artifactId>magazine-manager</artifactId>
+        <groupId>bg.jug</groupId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>microprofile-dependencies</artifactId>
+    <packaging>pom</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>javax.enterprise</groupId>
+            <artifactId>cdi-api</artifactId>
+            <version>${cdi-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+            <version>${jaxrs-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.json</groupId>
+            <artifactId>javax.json-api</artifactId>
+            <version>${jsonp-version}</version>
+        </dependency>
+    </dependencies>
+
+</project>
