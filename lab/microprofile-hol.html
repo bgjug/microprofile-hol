@@ -524,10 +524,10 @@ table.CodeRay td.code>pre{padding:0}
 <ul class="sectlevel1">
 <li><a href="#_introduction">Introduction</a>
 <ul class="sectlevel2">
-<li><a href="#_micro_profile">Micro Profile</a></li>
+<li><a href="#_the_java_microprofile">The Java MicroProfile</a></li>
 <li><a href="#_magazine_manager">Magazine Manager</a></li>
 <li><a href="#_initial_project">Initial project</a></li>
-<li><a href="#_how_this_works">How this works</a></li>
+<li><a href="#_how_this_lab_works">How this lab works</a></li>
 </ul>
 </li>
 <li><a href="#_core_micro_profile_technologies">Core Micro Profile technologies</a>
@@ -567,20 +567,288 @@ table.CodeRay td.code>pre{padding:0}
 <h2 id="_introduction">Introduction</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_micro_profile">Micro Profile</h3>
+<h3 id="_the_java_microprofile">The Java MicroProfile</h3>
 
 </div>
 <div class="sect2">
 <h3 id="_magazine_manager">Magazine Manager</h3>
+<div class="paragraph">
+<p>To showcase the MicroProfile we&#8217;ll develop together a sample app.
+Let&#8217;s suppose that it is used by an owner of a magazine to manage the various parts of their business.
+It consists of four microservices, each of which can be scaled and upgraded separately.</p>
+</div>
+<div class="paragraph">
+<p>The responsibility of the <em>Authors</em> microservice is to keep track of the authors that are writing for the magazine.
+An author has the following properties:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> <span class="type">class</span> <span class="class">Author</span> {
+    <span class="directive">private</span> <span class="predefined-type">Long</span> id;
+    <span class="directive">private</span> <span class="predefined-type">String</span> firstName;
+    <span class="directive">private</span> <span class="predefined-type">String</span> lastName;
+    <span class="directive">private</span> <span class="predefined-type">String</span> email;
+    <span class="directive">private</span> <span class="type">boolean</span> isRegular;
+    <span class="directive">private</span> <span class="type">int</span> salary;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the initial version the microservice should support the following operations:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Retrieving all the authors</p>
+</li>
+<li>
+<p>Finding author by its names</p>
+</li>
+<li>
+<p>Finding author by its ID</p>
+</li>
+<li>
+<p>Adding an author</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The <em>Content</em> microservice takes care of the articles submitted by the authors as well as the comments on those articles.
+There are two domain objects in it:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> <span class="type">class</span> <span class="class">Article</span> {
+    <span class="directive">private</span> <span class="predefined-type">Long</span> id;
+    <span class="directive">private</span> <span class="predefined-type">String</span> title;
+    <span class="directive">private</span> <span class="predefined-type">String</span> content;
+    <span class="directive">private</span> <span class="predefined-type">String</span> author;
+    <span class="directive">private</span> <span class="predefined-type">List</span>&lt;Comment&gt; comments = <span class="keyword">new</span> <span class="predefined-type">ArrayList</span>&lt;&gt;();
+}
 
+<span class="directive">public</span> <span class="type">class</span> <span class="class">Comment</span> {
+    <span class="directive">private</span> <span class="predefined-type">Long</span> id;
+    <span class="directive">private</span> <span class="predefined-type">String</span> author;
+    <span class="directive">private</span> <span class="predefined-type">String</span> content;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Its initial functionality covers things like:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Retrieving all the articles along with their comments</p>
+</li>
+<li>
+<p>Finding an article by its ID</p>
+</li>
+<li>
+<p>Retrieving all the articles for an author</p>
+</li>
+<li>
+<p>Creating an articles</p>
+</li>
+<li>
+<p>Adding a comment to an existing article</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>We&#8217;ll go into more details in the Persistence chapter why in <code>Article</code> we don&#8217;t refer directly to the <code>Author</code> entity from the <em>Authors</em> microservice.
+For now let&#8217;s assume that we want to explore the <a href="http://microservices.io/patterns/data/database-per-service.html">Database per service</a> pattern.</p>
+</div>
+<div class="paragraph">
+<p>The third microservice in our list is the <em>Advertisers</em>.
+As its name implies it contains operations around the magazine&#8217;s advertisers:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> <span class="type">class</span> <span class="class">Advertiser</span> {
+    <span class="directive">private</span> <span class="predefined-type">Long</span> id;
+    <span class="directive">private</span> <span class="predefined-type">String</span> name;
+    <span class="directive">private</span> <span class="predefined-type">String</span> website;
+    <span class="directive">private</span> <span class="predefined-type">String</span> contactEmail;
+    <span class="directive">private</span> SponsorPackage sponsorPackage;
+}
+
+<span class="directive">public</span> <span class="type">enum</span> SponsorPackage {
+
+    GOLD(<span class="integer">1000</span>), SILVER(<span class="integer">500</span>), BRONZE(<span class="integer">100</span>);
+
+    <span class="directive">private</span> <span class="type">int</span> price;
+
+    SponsorPackage(<span class="type">int</span> price) {
+        <span class="local-variable">this</span>.price = price;
+    }
+
+    <span class="directive">public</span> <span class="type">int</span> getPrice() {
+        <span class="keyword">return</span> price;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The common functionality that we&#8217;ll provide with this microservice are these:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Get all the advertisers</p>
+</li>
+<li>
+<p>Find advertiser by name</p>
+</li>
+<li>
+<p>Find all the advertisers with a certain sponsor package</p>
+</li>
+<li>
+<p>Add an advertiser</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Last but not least comes the <em>Subscriber</em> microservice.
+Its domain model is as simple as that:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> <span class="type">class</span> <span class="class">Subscriber</span> {
+    <span class="directive">private</span> <span class="predefined-type">Long</span> id;
+    <span class="directive">private</span> <span class="predefined-type">String</span> firstName;
+    <span class="directive">private</span> <span class="predefined-type">String</span> lastName;
+    <span class="directive">private</span> <span class="predefined-type">String</span> email;
+    <span class="directive">private</span> <span class="predefined-type">String</span> address;
+    <span class="directive">private</span> LocalDate subscribedUntil;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And the operations that we are going to implement are:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Get the list of all subscribers</p>
+</li>
+<li>
+<p>Find subscriber by ID</p>
+</li>
+<li>
+<p>Retrieve all the expiring subscriptions</p>
+</li>
+<li>
+<p>Add a subscriber</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>These four microservices at the end will be configured to run on the four runtimes supporting the MicroProfile (one microservice per server).
+Basically you will be able to deploy each separate service on every runtime.
+However, to keep things simple, we did the following breakdown:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>Authors</em> running on Apache TomEE</p>
+</li>
+<li>
+<p><em>Content</em> running on IBM Liberty Profile</p>
+</li>
+<li>
+<p><em>Advertisers</em> running on WildFly Swarm</p>
+</li>
+<li>
+<p><em>Subscribers</em> running on Payara Micro</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In order to follow better the next steps in this lab, we would suggest that you pick the same setup.</p>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_initial_project">Initial project</h3>
+<div class="paragraph">
+<p>We&#8217;ve sketched for you an initial maven project containing the four microservices as Maven subprojects.
+It is located under the <code>lab/magman</code> directory of this lab.
+Use your favorite IDE to import that project.
+Make sure that it is imported as Maven project for the IDEs that it is not the default structure.</p>
+</div>
+<div class="paragraph">
+<p>You&#8217;ll notice that besides the four microservices there is a simple pom project that groups the three specs:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;properties&gt;</span>
+    <span class="tag">&lt;cdi-version&gt;</span>1.2<span class="tag">&lt;/cdi-version&gt;</span>
+    <span class="tag">&lt;jaxrs-version&gt;</span>2.0.1<span class="tag">&lt;/jaxrs-version&gt;</span>
+    <span class="tag">&lt;jsonp-version&gt;</span>1.0<span class="tag">&lt;/jsonp-version&gt;</span>
+<span class="tag">&lt;/properties&gt;</span>
 
+<span class="tag">&lt;dependencies&gt;</span>
+    <span class="tag">&lt;dependency&gt;</span>
+        <span class="tag">&lt;groupId&gt;</span>javax.enterprise<span class="tag">&lt;/groupId&gt;</span>
+        <span class="tag">&lt;artifactId&gt;</span>cdi-api<span class="tag">&lt;/artifactId&gt;</span>
+        <span class="tag">&lt;version&gt;</span>${cdi-version}<span class="tag">&lt;/version&gt;</span>
+    <span class="tag">&lt;/dependency&gt;</span>
+    <span class="tag">&lt;dependency&gt;</span>
+        <span class="tag">&lt;groupId&gt;</span>javax.ws.rs<span class="tag">&lt;/groupId&gt;</span>
+        <span class="tag">&lt;artifactId&gt;</span>javax.ws.rs-api<span class="tag">&lt;/artifactId&gt;</span>
+        <span class="tag">&lt;version&gt;</span>${jaxrs-version}<span class="tag">&lt;/version&gt;</span>
+    <span class="tag">&lt;/dependency&gt;</span>
+    <span class="tag">&lt;dependency&gt;</span>
+        <span class="tag">&lt;groupId&gt;</span>javax.json<span class="tag">&lt;/groupId&gt;</span>
+        <span class="tag">&lt;artifactId&gt;</span>javax.json-api<span class="tag">&lt;/artifactId&gt;</span>
+        <span class="tag">&lt;version&gt;</span>${jsonp-version}<span class="tag">&lt;/version&gt;</span>
+    <span class="tag">&lt;/dependency&gt;</span>
+<span class="tag">&lt;/dependencies&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>By depending on that project instead of <code>javaee-api</code>, we will make sure that the microservices we develop will not leak a non-MicroProfile technology like EJB.</p>
+</div>
+<div class="paragraph">
+<p>The we simply depend on the project by adding the following dependency in the four microservices:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
+    <span class="tag">&lt;groupId&gt;</span>bg.jug<span class="tag">&lt;/groupId&gt;</span>
+    <span class="tag">&lt;artifactId&gt;</span>microprofile-dependencies<span class="tag">&lt;/artifactId&gt;</span>
+    <span class="tag">&lt;version&gt;</span>${project.version}<span class="tag">&lt;/version&gt;</span>
+    <span class="tag">&lt;type&gt;</span>pom<span class="tag">&lt;/type&gt;</span>
+    <span class="tag">&lt;scope&gt;</span>provided<span class="tag">&lt;/scope&gt;</span>
+<span class="tag">&lt;/dependency&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Thus they can use the three MicroProfile specs.
+The only thing you need to do is to run in the <code>lab/magman</code> directory:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>mvn clean install</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>After that, you can go to the target directory of each microservice and you&#8217;ll notice one little war each.
+This is the standard format to deliver web applications in Java EE.
+So far.</p>
+</div>
 </div>
 <div class="sect2">
-<h3 id="_how_this_works">How this works</h3>
-
+<h3 id="_how_this_lab_works">How this lab works</h3>
+<div class="paragraph">
+<p>In the next few chapters we&#8217;ll guide you through the process of building a CDI, JAX-RS, JSON-P application, packing it in fat jar instead of war and dealing with persistence.
+In each chapter we&#8217;ll show you the different implementation aspects of two of the microservices (<em>Author</em> and <em>Content</em>), while the other two we&#8217;ll leave to you (with some hints from our side).</p>
+</div>
+<div class="paragraph">
+<p>You&#8217;ve may also noticed the <code>sources</code> directory in the root of this repository.
+You can always consult it if the hints are not helpful enough and you don&#8217;t have whom to ask.
+Besides the solution for the current version of the lab, it contains other features that will probably enter in future extensions that we plan to provide.</p>
+</div>
 </div>
 </div>
 </div>
