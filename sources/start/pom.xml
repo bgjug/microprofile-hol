@@ -47,7 +47,7 @@
                                     <workingDirectory>../authors</workingDirectory>
                                     <arguments>
                                         <argument>-jar</argument>
-                                        <argument>target/authors-exec.jar</argument>
+                                        <argument>target/ROOT-exec.jar</argument>
                                     </arguments>
                                 </configuration>
                             </execution>
@@ -79,7 +79,7 @@
                                     <workingDirectory>../subscribers</workingDirectory>
                                     <arguments>
                                         <argument>-jar</argument>
-                                        <argument>target/subscribers.jar</argument>
+                                        <argument>target/ROOT.jar</argument>
                                         <argument>--port</argument>
                                         <argument>${subscribersPort}</argument>
                                     </arguments>
