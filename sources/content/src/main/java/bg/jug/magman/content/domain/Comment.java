@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package bg.jug.magman.domain;
+package bg.jug.magman.content.domain;
 
+import javax.json.*;
+import java.io.StringReader;
 import java.util.Objects;
 
-public class Comment {
+public class Comment implements Jsonable {
 
     private Long id;
     private String author;
@@ -80,5 +82,29 @@ public class Comment {
                 "author='" + author + '\'' +
                 ", content='" + content + '\'' +
                 '}';
+    }
+
+    public static Comment fromJson(String jsonString) {
+        JsonReader reader = Json.createReader(new StringReader(jsonString));
+        JsonObject jsonObject = reader.readObject();
+
+        Comment comment = new Comment();
+        JsonNumber jsonId = jsonObject.getJsonNumber("id");
+        if (jsonId != null) {
+            comment.id = jsonId.longValue();
+        }
+        comment.author = jsonObject.getString("author");
+        comment.content = jsonObject.getString("content");
+
+        return comment;
+    }
+
+    public JsonObject toJson() {
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        builder.add("id", id);
+        builder.add("author", author);
+        builder.add("content", content);
+
+        return builder.build();
     }
 }

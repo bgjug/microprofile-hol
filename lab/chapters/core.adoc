@@ -1,7 +1,380 @@
 == Core Micro Profile technologies
 
+In this chapter of the lab we are going to see how we can implement basic business functionality using the three MicroProfile 1.0 technologies:
+
+* CDI
+* JAX-RS
+* JSON-P
+
+We assume that you have some basic knowledge about Java EE, but if you don't, don't worry.
+You'll be able to follow along.
+
+We'll start with adding a data access object with a method that returns all the available records of a given resource.
+Then we'll make sure that this is exposed as a RESTful webservice.
+Finally we'll show you how you can transform the Java representation of the domain object to JSON.
+
 === Dependency Injection and object lifecycle
+
+The first thing we'll do is to create the data access object for the authors, make it return all the authors and inject it in `ResourceAuthor`.
+
+Go to the _authors_ project in your IDE and under the `bg.jug.magman.authors` package create the package `persistence`.
+Inside the newly created package add the following class:
+
+[source, java]
+----
+@javax.enterprise.context.ApplicationScoped
+public class AuthorsDAO {
+}
+----
+
+The annotation (you may add its package as import instead) makes sure that the CDI container will create only one instance of the above class (we'll use the term _bean_ from now on).
+Now let's add the retrieve method.
+For the time being it will return hard coded data:
+
+[source, java]
+----
+@ApplicationScoped
+public class AuthorsDAO {
+    ArrayList<Author> authors = new ArrayList<>();
+    Author bilboBaggins = new Author("Bilbo", "Baggins", "bilbo@shire.com", true, 1000);
+    Author spiderman = new Author("Spider", "Man", "spiderman@comics.com", false, 860);
+    Author captainPower = new Author("Captain", "Power", "power@futuresoldiers.com", true, 750);
+
+    authors.add(bilboBaggins);
+    authors.add(spiderman);
+    authors.add(captainPower);
+
+    return authors;
+}
+----
+
+Finally, let's inject this bean into our resource class.
+If you still don't understand the role of `ResourceAuthors`, bear with us.
+
+[source, java]
+----
+public class ResourceAuthors {
+
+    @Inject
+    private AuthorsDAO authorsDAO;
+
+    public String getAuthors() {
+        return "authors";
+    }
+
+}
+----
+
+Make sure that you import the missing types.
+
+What the above construction does is telling the CDI container when creating the `ResourceAuthors` class, to inject that single instance of `AuthorsDAO`.
+
+So far so good. Before we proceed to the next section, let's do together the `ArticlesDAO` (in the _Content_ microservice):
+
+[source, java]
+----
+package bg.jug.magman.content.persistence;
+
+@ApplicationScoped
+public class ArticleDAO {
+
+    public List<Article> getAllArticles() {
+        List<Article> articles = new ArrayList<>();
+        Article article1 = new Article("Bulgarian JUG’s 2015", "2015 is over and 2016 is a week old now. However, I can’t forget the past year, which happened to be the most active one for the Bulgarian JUG, where I happen to be one of the co-leads. And what a year it was! We had everything: seminar talks with local and foreign speakers, hands on labs, Adopt OpenJDK and Adopt a JSR hackathons, a code retreat and a big international conference. In this blog post I will briefly go through all the events that kept our community busy in 2015.", "Bilbo Baggins");
+        Article article2 = new Article("Primitives in Generics, part 3", "In the Bulgarian JUG we had an event dedicated to trying out the OpenJDK Valhalla project’s achievements in the area of using primitive parameters of generics. Our colleague and blogger Mihail Stoynov already wrote about our workshop. I decided, though, to go in a little bit more details and explain the various aspects of the feature.", "Spider Man");
+        Article article3 = new Article("Primitives in Generics, part 2", "Whenever the OpenJDK developers want to experiment with a concept they first create a dedicated OpenJDK project for that. This project usually has its own source repository, which is a fork of the OpenJDK sources. It has its page and mailing list and its main purpose is to experiment with ideas for implementing the new concept before creating the Java Enhancement Proposals (JEPs), the Java Specification Requests (JSRs) and committing source code in the real repositories. Features like lambdas, script engine support, method handles and invokedynamic walked this way before entering the official Java release.", "Spider Man");
+        Article article4 = new Article("Primitives in Generics, part 1", "Java generics is one of its most widely commented topics. While the discussion whether they should be reified, i.e. the generic parameter information is not erased by javac, is arguably the hottest topic for years now, the lack of support for primitives as parameter types is something that at least causes some confusion. It leads to applying unnecessary boxing when for example you want to put an int into a List (read on to find out about the performance penalty). It also leads to adding “companion” classes in most of the generic APIs, like IntStream and LongStream for example.", "Spider Man");
+        Article article5 = new Article("JavaOne, day 4", "The last day at JavaOne started as usual with the community keynote. I didn’t go to it, because I wanted to have a rest after the Aerosmith and Macklemore & Ryan Lewis concert last night and also wanted to catch up with my blogs. However, the people that I follow on twitter were kind enough to update me with the most interesting bits of the session. Additionally, there’s already a blog from Ben Evans about it.", "Captain Power");
+        Article article6 = new Article("JavaOne days two and three", "In March this year I had great time at the JavaLand conference. Along with other great people, I met there the freelancer and blog author Roberto Cortez. He told me that he is going to send a few session proposals to JavaOne and asked me whether I wanted to join him for the Java EE Batch talk. I hadn’t heard much about that topic at that time, but I agreed. Then the proposal got accepted and here I am at JavaOne now. What do you know", "Captain Power");
+
+        articles.add(article1);
+        articles.add(article2);
+        articles.add(article3);
+        articles.add(article4);
+        articles.add(article5);
+        articles.add(article6);
+
+        return articles;
+    }
+}
+----
+
+You may have noticed the last parameter in the `Article` constructor.
+That matches to the first and last name of a particular records from the _Authors_ microservice.
+
+Finally, let's inject the DAO in the `ContentResource`:
+
+[source, java]
+----
+public class ContentResource {
+
+    @Inject
+    private ArticleDAO articleDAO;
+
+    public String getArticles() {
+        return "articles";
+    }
+
+}
+----
 
 === Exposure to clients
 
+Now that we have the data access logic in place, let's make sure that it is available for the clients of our resources.
+The way to do it in the MicroProfile is via a JAX-RS resource.
+In order to enable at all JAX-RS, we will need to create a special marker class.
+
+Let's first do it for the _Authors_ microservice.
+Create a new class called `Application` under `bg.jug.magman.authors.rest`.
+Make it extend `javax.ws.rs.core.Application` and annotate it with `@javax.ws.rs.ApplicationPath`:
+
+[source, java]
+----
+package bg.jug.magman.authors.rest;
+
+import javax.ws.rs.ApplicationPath;
+
+@ApplicationPath("/authors")
+public class Application extends javax.ws.rs.core.Application {
+}
+----
+
+The value of the `@ApplicationPath` annotation (in our case `"/authors"`) implies that all the JAX-RS resources exposed by the _Authors_ microservice will be located under the /authors path.
+
+Do the same in the _Content_ microservice:
+
+[source, java]
+----
+package bg.jug.magman.content.rest;
+
+import javax.ws.rs.ApplicationPath;
+
+@ApplicationPath("/content")
+public class Application extends javax.ws.rs.core.Application {
+}
+----
+
+Now let's turn our resource classes to full-fledged JAX-RS endpoints.
+In order to do that they need to be annotated with `@Path`, they need to have a proper CDI scope (`@RequestScoped` is good enough) and need to have at least one method annotated with any of the JAX-RS verb annotations (`@GET`, `@POST`, etc.).
+Let's first change the `ResourceAuthors` class:
+
+[source, java]
+----
+@Path("/")
+@RequestScoped
+public class ResourceAuthors {
+
+    @Inject
+    private AuthorsDAO authorsDAO;
+
+    @GET
+    public String getAuthors() {
+        return "authors";
+    }
+}
+----
+
+Now let's return the results of the `authorsDAO.getAuthors()` method:
+
+[source, java]
+----
+@GET
+public String getAuthors() {
+    return authorsDAO.getAuthors().toString();
+}
+----
+
+Now we can build again the authors.war and deploy it on any application server.
+
+Once you do it, try to access `http://localhost:8080/authors/authors` (assuming 8080 is the default HTTP port).
+The above path is formed by the war name ("authors"), the application path ("authors") and the resource path (empty string).
+You should be able to see our three initial authors:
+
+----
+[{id=null, firstName='Bilbo', lastName='Baggins', email='bilbo@shire.com', isRegular=true, salary=1000}, {id=null, firstName='Spider', lastName='Man', email='spiderman@comics.com', isRegular=false, salary=860}, {id=null, firstName='Captain', lastName='Power', email='power@futuresoldiers.com', isRegular=true, salary=750}]
+----
+
+The _Content_ resource is not much different than the _Authors_:
+
+[source, java]
+----
+@Path("/")
+@RequestScoped
+public class ContentResource {
+
+    @Inject
+    private ArticleDAO articleDAO;
+
+    @GET
+    public String getArticles() {
+        return articleDAO.getAllArticles().toString();
+    }
+
+}
+----
+
 === Communication format
+
+So far the responses of our resources were in plain text format.
+However, most of the contemporary clients (web, mobile, etc.) are using JSON format for communicating with the backend.
+That is why we should not return plain string, but rather JSON formatted one.
+We should also tell our clients that the response that they get is in that format, so that they can treat it properly.
+Last, but not least, a good practice for the endpoints is to return `javax.ws.rs.core.Response` objects.
+Thus they can encapsulate additional meta information besides the mere payload (like the HTTP response code or some headers for example).
+
+First things first.
+Let's add functionality in our Author domain object to convert itself into JSON.
+For that we'll use the JSON-P API - the third core technology in MicroProfile.
+
+[source, java]
+----
+public JsonObject toJson() {
+    JsonObjectBuilder result = Json.createObjectBuilder();
+
+    result.add("lastName", lastName)
+          .add("firstName", firstName)
+          .add("email", email)
+          .add("salary", salary)
+          .add("regular", isRegular);
+    if (id != null)
+        result.add("id", id);
+
+    return result.build()();
+}
+----
+
+The entry point here is the `Json.createObjectBuilder()` method.
+Once we get hold of the `JsonObjectBuilder` instance, we can use its `add` method to add the varioud attributes of our JSON object.
+At the end, we retrieve the built `JsonObject` and return it.
+
+Back in the resource class, we need to create a JSON array out of our author JSON objects.
+We use again the JSON-P API:
+
+[source, java]
+----
+@Path("/")
+@RequestScoped
+public class ResourceAuthors {
+
+    @Inject
+    private AuthorsDAO authorsDAO;
+
+    @GET
+    public String getAuthors() {
+        List<Author> authors = authorsDAO.getAuthors();
+        List<JsonObject> authorJsons = authors.stream()
+                                        .map(Author::toJson)
+                                        .collect(Collectors.toList());
+        JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+        authorJsons.forEach(arrayBuilder::add);
+        JsonArray result = arrayBuilder.build();
+    }
+
+}
+----
+
+Finally, let's change the return type to `Response`, build an instance, set its HTTP code to 200 and return it:
+
+[source, java]
+----
+@GET
+public Response getAuthors() {
+    List<Author> authors = authorsDAO.getAuthors();
+    List<JsonObject> authorJsons = authors.stream()
+                                    .map(Author::toJson)
+                                    .collect(Collectors.toList());
+    JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+    authorJsons.forEach(arrayBuilder::add);
+    JsonArray result = arrayBuilder.build();
+
+    return Response.ok(result).build();
+}
+----
+
+Last, but not least, our method should specify that it produces JSON instead of plain text:
+
+[source, java]
+----
+@Produces(MediaType.APPLICATION_JSON)
+public Response getAuthors() {
+  //
+}
+----
+
+Now, if you deploy the authors application and access it, you should get a proper JSON:
+
+[source, json]
+----
+[{"lastName":"Baggins","firstName":"Bilbo","email":"bilbo@shire.com","salary":1000,"regular":true},{"lastName":"Man","firstName":"Spider","email":"spiderman@comics.com","salary":860,"regular":false},{"lastName":"Power","firstName":"Captain","email":"power@futuresoldiers.com","salary":750,"regular":true}]
+----
+
+The implementation for the _Content_ microservice is almost the same.
+The only difference comes from the fact that the `Article` domain object itself contains `Comment` objects:
+
+[source, java]
+----
+public class Comment {
+
+    // fields and methods skipped
+
+    public JsonObject toJson() {
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        builder.add("id", id);
+        builder.add("author", author);
+        builder.add("content", content);
+
+        return builder.build();
+    }
+}
+
+public class Article {
+
+    // fields and methods skipped
+
+    public JsonObject toJson() {
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        if (id != null) {
+            builder.add("id", id);
+        }
+        builder.add("title", title);
+        builder.add("content", content);
+        builder.add("author", author);
+        if (comments != null)
+            builder.add("comments", getCommentsArray(comments));
+        return builder.build();
+    }
+
+    private JsonArray getCommentsArray(List<Comment> comments) {
+        JsonArrayBuilder builder = Json.createArrayBuilder();
+        comments.forEach(comment -> builder.add(comment.toJson().toString()));
+        return builder.build();
+    }
+}
+----
+
+And then in the resource class:
+
+[source, java]
+----
+@GET
+@Produces(MediaType.APPLICATION_JSON)
+public Response getArticles() {
+    List<Article> articles = articleDAO.getAllArticles();
+    List<JsonObject> articlesJson = articles.stream()
+            .map(Article::toJson)
+            .collect(Collectors.toList());
+    JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+    articlesJson.forEach(arrayBuilder::add);
+    JsonArray result = arrayBuilder.build();
+
+    return Response.ok(result).build();
+}
+----
+
+=== And now what?
+
+You may go on and implement the MicroProfile trinity for the other two microservices.
+Some hints:
+
+* You may consider using JAXB for some of the remaining microservices (as we did for _Advertisers_ in the solution). JAXB is part of Java SE (not EE technology), which makes it available anyway
+* Consider formatting the `subscribedUntil` field of the `Subscriber` when turning it to JSON. One working format is `"yyyy-MM-dd"`

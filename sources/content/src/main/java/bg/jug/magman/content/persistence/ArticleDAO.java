@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package bg.jug.magman.persistence;
+package bg.jug.magman.content.persistence;
 
-import bg.jug.magman.domain.Article;
-import bg.jug.magman.domain.Comment;
-import bg.jug.magman.domain.Photo;
+import bg.jug.magman.content.domain.Article;
+import bg.jug.magman.content.domain.Comment;
+import bg.jug.magman.content.domain.Photo;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
