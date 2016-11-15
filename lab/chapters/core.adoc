@@ -99,7 +99,10 @@ public class ArticleDAO {
 }
 ----
 
-And let's inject it in the `ContentResource`:
+You may have noticed the last parameter in the `Article` constructor.
+That matches to the first and last name of a particular records from the _Authors_ microservice.
+
+Finally, let's inject the DAO in the `ContentResource`:
 
 [source, java]
 ----
@@ -117,4 +120,261 @@ public class ContentResource {
 
 === Exposure to clients
 
+Now that we have the data access logic in place, let's make sure that it is available for the clients of our resources.
+The way to do it in the MicroProfile is via a JAX-RS resource.
+In order to enable at all JAX-RS, we will need to create a special marker class.
+
+Let's first do it for the _Authors_ microservice.
+Create a new class called `Application` under `bg.jug.magman.authors.rest`.
+Make it extend `javax.ws.rs.core.Application` and annotate it with `@javax.ws.rs.ApplicationPath`:
+
+[source, java]
+----
+package bg.jug.magman.authors.rest;
+
+import javax.ws.rs.ApplicationPath;
+
+@ApplicationPath("/authors")
+public class Application extends javax.ws.rs.core.Application {
+}
+----
+
+The value of the `@ApplicationPath` annotation (in our case `"/authors"`) implies that all the JAX-RS resources exposed by the _Authors_ microservice will be located under the /authors path.
+
+Do the same in the _Content_ microservice:
+
+[source, java]
+----
+package bg.jug.magman.content.rest;
+
+import javax.ws.rs.ApplicationPath;
+
+@ApplicationPath("/content")
+public class Application extends javax.ws.rs.core.Application {
+}
+----
+
+Now let's turn our resource classes to full-fledged JAX-RS endpoints.
+In order to do that they need to be annotated with `@Path`, they need to have a proper CDI scope (`@RequestScoped` is good enough) and need to have at least one method annotated with any of the JAX-RS verb annotations (`@GET`, `@POST`, etc.).
+Let's first change the `ResourceAuthors` class:
+
+[source, java]
+----
+@Path("/")
+@RequestScoped
+public class ResourceAuthors {
+
+    @Inject
+    private AuthorsDAO authorsDAO;
+
+    @GET
+    public String getAuthors() {
+        return "authors";
+    }
+}
+----
+
+Now let's return the results of the `authorsDAO.getAuthors()` method:
+
+[source, java]
+----
+@GET
+public String getAuthors() {
+    return authorsDAO.getAuthors().toString();
+}
+----
+
+Now we can build again the authors.war and deploy it on any application server.
+
+Once you do it, try to access `http://localhost:8080/authors/authors` (assuming 8080 is the default HTTP port).
+The above path is formed by the war name ("authors"), the application path ("authors") and the resource path (empty string).
+You should be able to see our three initial authors:
+
+----
+[{id=null, firstName='Bilbo', lastName='Baggins', email='bilbo@shire.com', isRegular=true, salary=1000}, {id=null, firstName='Spider', lastName='Man', email='spiderman@comics.com', isRegular=false, salary=860}, {id=null, firstName='Captain', lastName='Power', email='power@futuresoldiers.com', isRegular=true, salary=750}]
+----
+
+The _Content_ resource is not much different than the _Authors_:
+
+[source, java]
+----
+@Path("/")
+@RequestScoped
+public class ContentResource {
+
+    @Inject
+    private ArticleDAO articleDAO;
+
+    @GET
+    public String getArticles() {
+        return articleDAO.getAllArticles().toString();
+    }
+
+}
+----
+
 === Communication format
+
+So far the responses of our resources were in plain text format.
+However, most of the contemporary clients (web, mobile, etc.) are using JSON format for communicating with the backend.
+That is why we should not return plain string, but rather JSON formatted one.
+We should also tell our clients that the response that they get is in that format, so that they can treat it properly.
+Last, but not least, a good practice for the endpoints is to return `javax.ws.rs.core.Response` objects.
+Thus they can encapsulate additional meta information besides the mere payload (like the HTTP response code or some headers for example).
+
+First things first.
+Let's add functionality in our Author domain object to convert itself into JSON.
+For that we'll use the JSON-P API - the third core technology in MicroProfile.
+
+[source, java]
+----
+public JsonObject toJson() {
+    JsonObjectBuilder result = Json.createObjectBuilder();
+
+    result.add("lastName", lastName)
+          .add("firstName", firstName)
+          .add("email", email)
+          .add("salary", salary)
+          .add("regular", isRegular);
+    if (id != null)
+        result.add("id", id);
+
+    return result.build()();
+}
+----
+
+The entry point here is the `Json.createObjectBuilder()` method.
+Once we get hold of the `JsonObjectBuilder` instance, we can use its `add` method to add the varioud attributes of our JSON object.
+At the end, we retrieve the built `JsonObject` and return it.
+
+Back in the resource class, we need to create a JSON array out of our author JSON objects.
+We use again the JSON-P API:
+
+[source, java]
+----
+@Path("/")
+@RequestScoped
+public class ResourceAuthors {
+
+    @Inject
+    private AuthorsDAO authorsDAO;
+
+    @GET
+    public String getAuthors() {
+        List<Author> authors = authorsDAO.getAuthors();
+        List<JsonObject> authorJsons = authors.stream()
+                                        .map(Author::toJson)
+                                        .collect(Collectors.toList());
+        JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+        authorJsons.forEach(arrayBuilder::add);
+        JsonArray result = arrayBuilder.build();
+    }
+
+}
+----
+
+Finally, let's change the return type to `Response`, build an instance, set its HTTP code to 200 and return it:
+
+[source, java]
+----
+@GET
+public Response getAuthors() {
+    List<Author> authors = authorsDAO.getAuthors();
+    List<JsonObject> authorJsons = authors.stream()
+                                    .map(Author::toJson)
+                                    .collect(Collectors.toList());
+    JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+    authorJsons.forEach(arrayBuilder::add);
+    JsonArray result = arrayBuilder.build();
+
+    return Response.ok(result).build();
+}
+----
+
+Last, but not least, our method should specify that it produces JSON instead of plain text:
+
+[source, java]
+----
+@Produces(MediaType.APPLICATION_JSON)
+public Response getAuthors() {
+  //
+}
+----
+
+Now, if you deploy the authors application and access it, you should get a proper JSON:
+
+[source, json]
+----
+[{"lastName":"Baggins","firstName":"Bilbo","email":"bilbo@shire.com","salary":1000,"regular":true},{"lastName":"Man","firstName":"Spider","email":"spiderman@comics.com","salary":860,"regular":false},{"lastName":"Power","firstName":"Captain","email":"power@futuresoldiers.com","salary":750,"regular":true}]
+----
+
+The implementation for the _Content_ microservice is almost the same.
+The only difference comes from the fact that the `Article` domain object itself contains `Comment` objects:
+
+[source, java]
+----
+public class Comment {
+
+    // fields and methods skipped
+
+    public JsonObject toJson() {
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        builder.add("id", id);
+        builder.add("author", author);
+        builder.add("content", content);
+
+        return builder.build();
+    }
+}
+
+public class Article {
+
+    // fields and methods skipped
+
+    public JsonObject toJson() {
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        if (id != null) {
+            builder.add("id", id);
+        }
+        builder.add("title", title);
+        builder.add("content", content);
+        builder.add("author", author);
+        if (comments != null)
+            builder.add("comments", getCommentsArray(comments));
+        return builder.build();
+    }
+
+    private JsonArray getCommentsArray(List<Comment> comments) {
+        JsonArrayBuilder builder = Json.createArrayBuilder();
+        comments.forEach(comment -> builder.add(comment.toJson().toString()));
+        return builder.build();
+    }
+}
+----
+
+And then in the resource class:
+
+[source, java]
+----
+@GET
+@Produces(MediaType.APPLICATION_JSON)
+public Response getArticles() {
+    List<Article> articles = articleDAO.getAllArticles();
+    List<JsonObject> articlesJson = articles.stream()
+            .map(Article::toJson)
+            .collect(Collectors.toList());
+    JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+    articlesJson.forEach(arrayBuilder::add);
+    JsonArray result = arrayBuilder.build();
+
+    return Response.ok(result).build();
+}
+----
+
+=== And now what?
+
+You may go on and implement the MicroProfile trinity for the other two microservices.
+Some hints:
+
+* You may consider using JAXB for some of the remaining microservices (as we did for _Advertisers_ in the solution). JAXB is part of Java SE (not EE technology), which makes it available anyway
+* Consider formatting the `subscribedUntil` field of the `Subscriber` when turning it to JSON. One working format is `"yyyy-MM-dd"`
