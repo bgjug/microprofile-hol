@@ -524,7 +524,6 @@ table.CodeRay td.code>pre{padding:0}
 <ul class="sectlevel1">
 <li><a href="#_introduction">Introduction</a>
 <ul class="sectlevel2">
-<li><a href="#_the_java_microprofile">The Java MicroProfile</a></li>
 <li><a href="#_magazine_manager">Magazine Manager</a></li>
 <li><a href="#_initial_project">Initial project</a></li>
 <li><a href="#_how_this_lab_works">How this lab works</a></li>
@@ -546,8 +545,12 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#_payara_micro">Payara Micro</a></li>
 </ul>
 </li>
-<li><a href="#_what_about_persistence">What about persistence?</a></li>
-<li><a href="#_other_interesting_features">Other interesting features</a></li>
+<li><a href="#_what_about_persistence">What about persistence?</a>
+<ul class="sectlevel2">
+<li><a href="#_the_data_access_objects">The data access objects</a></li>
+<li><a href="#_the_resources">The resources</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -555,10 +558,6 @@ table.CodeRay td.code>pre{padding:0}
 <div class="sect1">
 <h2 id="_introduction">Introduction</h2>
 <div class="sectionbody">
-<div class="sect2">
-<h3 id="_the_java_microprofile">The Java MicroProfile</h3>
-
-</div>
 <div class="sect2">
 <h3 id="_magazine_manager">Magazine Manager</h3>
 <div class="paragraph">
@@ -1592,20 +1591,208 @@ You also need to create a <code>glassfish-web.xml</code> file in the <code>subsc
 <div class="sect1">
 <h2 id="_what_about_persistence">What about persistence?</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>You may have noticed that the persistence topic is not covered by the first version of MicroProfile.
+The reason for that is that it&#8217;s quite broad.
+The default persistence technology for Java EE is JPA, but in a real microservice application you may have lots of different approaches, including NoSQL and JDBC.</p>
+</div>
+<div class="paragraph">
+<p>That is why, to keep things simple, we are going to store the data of our microservice in the simplest possible store - an in-memory HashMap.</p>
+</div>
+<div class="sect2">
+<h3 id="_the_data_access_objects">The data access objects</h3>
+<div class="paragraph">
+<p>Let&#8217;s add a HashMap field to our <code>AuthorsDAO</code> class.
+To keep track of the newly created entries IDs, we&#8217;ll also have an <code>AtomicLong</code> field to store the latest ID that we assigned.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@ApplicationScoped</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">AuthorDAO</span> {
 
+    <span class="directive">private</span> <span class="predefined-type">AtomicLong</span> sequence = <span class="keyword">new</span> <span class="predefined-type">AtomicLong</span>(<span class="integer">0</span>);
+    <span class="directive">private</span> <span class="predefined-type">Map</span>&lt;<span class="predefined-type">Long</span>,Author&gt; authors = <span class="keyword">new</span> <span class="predefined-type">HashMap</span>&lt;&gt;();
+
+    ....
+}</code></pre>
 </div>
 </div>
-<div class="sect1">
-<h2 id="_other_interesting_features">Other interesting features</h2>
-<div class="sectionbody">
+<div class="paragraph">
+<p>Now let&#8217;s add an <code>addAuthor</code> method:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> <span class="type">void</span> addAuthor(Author author){
+    <span class="predefined-type">Long</span> authorId = sequence.incrementAndGet();
+    author.setId(authorId);
+    authors.put(authorId,author);
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Once we have that in place, we&#8217;ll certainly want our <code>getAuthors</code> method to return the content of the map instead of the hard-coded values.
+But still, it is good to have bootstrap data to showcase.
+So let&#8217;s move the content of the <code>getAuthors</code> method to another one, which we will annotate with the <code>@PostConstruct</code> annotation:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@PostConstruct</span>
+<span class="directive">public</span> <span class="type">void</span> addTestData() {
+    Author bilboBaggins = <span class="keyword">new</span> Author(<span class="string"><span class="delimiter">&quot;</span><span class="content">Bilbo</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Baggins</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">bilbo@shire.com</span><span class="delimiter">&quot;</span></span>, <span class="predefined-constant">true</span>, <span class="integer">1000</span>);
+    Author spiderman = <span class="keyword">new</span> Author(<span class="string"><span class="delimiter">&quot;</span><span class="content">Spider</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Man</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">spiderman@comics.com</span><span class="delimiter">&quot;</span></span>, <span class="predefined-constant">false</span>, <span class="integer">860</span>);
+    Author captainPower = <span class="keyword">new</span> Author(<span class="string"><span class="delimiter">&quot;</span><span class="content">Captain</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Power</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">power@futuresoldiers.com</span><span class="delimiter">&quot;</span></span>, <span class="predefined-constant">true</span>, <span class="integer">750</span>);
 
+    addAuthor(bilboBaggins);
+    addAuthor(spiderman);
+    addAuthor(captainPower);
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This method will be called after the <code>AuthorsDAO</code> is constructed and after its dependencies are injected.</p>
+</div>
+<div class="paragraph">
+<p>Next, let&#8217;s return the content of the map from the getAuthors method:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> <span class="predefined-type">List</span>&lt;Author&gt; getAuthors() {
+    <span class="keyword">return</span> <span class="keyword">new</span> <span class="predefined-type">ArrayList</span>&lt;&gt;(authors.values());
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You should do exactly the same for the other microservice DAOs.
+For example for <code>ArticleDAO</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@ApplicationScoped</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">ArticleDAO</span> {
+
+    <span class="directive">private</span> <span class="predefined-type">AtomicLong</span> sequence = <span class="keyword">new</span> <span class="predefined-type">AtomicLong</span>(<span class="integer">0</span>);
+    <span class="directive">private</span> <span class="predefined-type">Map</span>&lt;<span class="predefined-type">Long</span>, Article&gt; articles = <span class="keyword">new</span> <span class="predefined-type">ConcurrentHashMap</span>&lt;&gt;();
+    <span class="directive">private</span> <span class="predefined-type">Map</span>&lt;<span class="predefined-type">Long</span>, Comment&gt; comments = <span class="keyword">new</span> <span class="predefined-type">ConcurrentHashMap</span>&lt;&gt;();
+
+    <span class="directive">public</span> Article addArticle(Article article) {
+        <span class="predefined-type">Long</span> articleId = sequence.incrementAndGet();
+        article.setId(articleId);
+
+        <span class="predefined-type">List</span>&lt;Comment&gt; comments = article.getComments();
+        <span class="keyword">if</span> (comments != <span class="predefined-constant">null</span>) {
+            comments.stream()
+                    .filter(comment -&gt; comment.getId() == <span class="predefined-constant">null</span>)
+                    .forEach(comment -&gt; comment.setId(sequence.incrementAndGet()));
+            comments.forEach(comment -&gt; <span class="local-variable">this</span>.comments.put(comment.getId(), comment));
+        }
+        articles.put(articleId, article);
+
+        <span class="keyword">return</span> article;
+    }
+
+    <span class="directive">public</span> <span class="predefined-type">List</span>&lt;Article&gt; getAllArticles() {
+        <span class="keyword">return</span> <span class="keyword">new</span> <span class="predefined-type">ArrayList</span>&lt;&gt;(articles.values());
+    }
+
+    <span class="annotation">@PostConstruct</span>
+    <span class="directive">public</span> <span class="type">void</span> insertTestData() {
+        Article article1 = <span class="keyword">new</span> Article(<span class="string"><span class="delimiter">&quot;</span><span class="content">Bulgarian JUG’s 2015</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">2015 is over and 2016 is a week old now. However, I can’t forget the past year, which happened to be the most active one for the Bulgarian JUG, where I happen to be one of the co-leads. And what a year it was! We had everything: seminar talks with local and foreign speakers, hands on labs, Adopt OpenJDK and Adopt a JSR hackathons, a code retreat and a big international conference. In this blog post I will briefly go through all the events that kept our community busy in 2015.</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Bilbo Baggins</span><span class="delimiter">&quot;</span></span>);
+        Article article2 = <span class="keyword">new</span> Article(<span class="string"><span class="delimiter">&quot;</span><span class="content">Primitives in Generics, part 3</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">In the Bulgarian JUG we had an event dedicated to trying out the OpenJDK Valhalla project’s achievements in the area of using primitive parameters of generics. Our colleague and blogger Mihail Stoynov already wrote about our workshop. I decided, though, to go in a little bit more details and explain the various aspects of the feature.</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Spider Man</span><span class="delimiter">&quot;</span></span>);
+        Article article3 = <span class="keyword">new</span> Article(<span class="string"><span class="delimiter">&quot;</span><span class="content">Primitives in Generics, part 2</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Whenever the OpenJDK developers want to experiment with a concept they first create a dedicated OpenJDK project for that. This project usually has its own source repository, which is a fork of the OpenJDK sources. It has its page and mailing list and its main purpose is to experiment with ideas for implementing the new concept before creating the Java Enhancement Proposals (JEPs), the Java Specification Requests (JSRs) and committing source code in the real repositories. Features like lambdas, script engine support, method handles and invokedynamic walked this way before entering the official Java release.</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Spider Man</span><span class="delimiter">&quot;</span></span>);
+        Article article4 = <span class="keyword">new</span> Article(<span class="string"><span class="delimiter">&quot;</span><span class="content">Primitives in Generics, part 1</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Java generics is one of its most widely commented topics. While the discussion whether they should be reified, i.e. the generic parameter information is not erased by javac, is arguably the hottest topic for years now, the lack of support for primitives as parameter types is something that at least causes some confusion. It leads to applying unnecessary boxing when for example you want to put an int into a List (read on to find out about the performance penalty). It also leads to adding “companion” classes in most of the generic APIs, like IntStream and LongStream for example.</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Spider Man</span><span class="delimiter">&quot;</span></span>);
+        Article article5 = <span class="keyword">new</span> Article(<span class="string"><span class="delimiter">&quot;</span><span class="content">JavaOne, day 4</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">The last day at JavaOne started as usual with the community keynote. I didn’t go to it, because I wanted to have a rest after the Aerosmith and Macklemore &amp; Ryan Lewis concert last night and also wanted to catch up with my blogs. However, the people that I follow on twitter were kind enough to update me with the most interesting bits of the session. Additionally, there’s already a blog from Ben Evans about it.</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Captain Power</span><span class="delimiter">&quot;</span></span>);
+        Article article6 = <span class="keyword">new</span> Article(<span class="string"><span class="delimiter">&quot;</span><span class="content">JavaOne days two and three</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">In March this year I had great time at the JavaLand conference. Along with other great people, I met there the freelancer and blog author Roberto Cortez. He told me that he is going to send a few session proposals to JavaOne and asked me whether I wanted to join him for the Java EE Batch talk. I hadn’t heard much about that topic at that time, but I agreed. Then the proposal got accepted and here I am at JavaOne now. What do you know</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Captain Power</span><span class="delimiter">&quot;</span></span>);
+
+        addArticle(article1);
+        addArticle(article2);
+        addArticle(article3);
+        addArticle(article4);
+        addArticle(article5);
+        addArticle(article6);
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_the_resources">The resources</h3>
+<div class="paragraph">
+<p>We have our add methods in place.
+So let&#8217;s expose it via the RESTful webservices.
+In order to do that, we&#8217;ll need a method annotated with <code>@POST</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@POST</span>
+<span class="directive">public</span> <span class="type">void</span> addAuthor(<span class="predefined-type">String</span> authorJson) {
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We specified that we&#8217;ll receive the author data as JSON in the POST request body.
+So we need a way to convert it to an <code>Author</code> object.
+Let&#8217;s add a static factory method in the <code>Author</code> class:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> <span class="directive">static</span> Author fromJson(<span class="predefined-type">String</span> json){
+    JsonReader reader = Json.createReader(<span class="keyword">new</span> <span class="predefined-type">StringReader</span>(json));
+    JsonObject authorObject = reader.readObject();
+    reader.close();
+
+    Author author = <span class="keyword">new</span> Author();
+    <span class="keyword">if</span> (authorObject.containsKey(<span class="string"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span>)) {
+        author.id = authorObject.getJsonNumber(<span class="string"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span>).longValue();
+    }
+    author.setFirstName(authorObject.getString(<span class="string"><span class="delimiter">&quot;</span><span class="content">firstName</span><span class="delimiter">&quot;</span></span>));
+    author.setLastName(authorObject.getString(<span class="string"><span class="delimiter">&quot;</span><span class="content">lastName</span><span class="delimiter">&quot;</span></span>));
+    author.setEmail(authorObject.getString(<span class="string"><span class="delimiter">&quot;</span><span class="content">email</span><span class="delimiter">&quot;</span></span>));
+    author.setRegular(authorObject.getBoolean(<span class="string"><span class="delimiter">&quot;</span><span class="content">regular</span><span class="delimiter">&quot;</span></span>));
+    author.setSalary(authorObject.getInt(<span class="string"><span class="delimiter">&quot;</span><span class="content">salary</span><span class="delimiter">&quot;</span></span>));
+
+    <span class="keyword">return</span> author;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And now let&#8217;s call that from our resource method:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@POST</span>
+<span class="directive">public</span> <span class="type">void</span> addAuthor(<span class="predefined-type">String</span> authorJson) {
+    authorsDAO.addAuthor(Author.fromJson(authorJson));
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now you can again build and start the author resource:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>mvn clean install
+java -jar target/ROOT-exec.jar</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then you can try to add a new author for example with cUrl:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>curl -H "Content-Type: application/json" -X POST --data '{"firstName": "Mickey", "lastName": "Mouse", "email": "mickey@mouse.org", "salary": 1200, "regular": true}' http://localhost:8080/authors</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It should be available if you look at <code><a href="http://localhost:8080/authors" class="bare">http://localhost:8080/authors</a></code></p>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
 Version 0.9<br>
-Last updated 2016-11-14 17:07:26 E. Europe Standard Time
+Last updated 2016-11-15 13:47:05 E. Europe Standard Time
 </div>
 </div>
 </body>

@@ -15,5 +15,3 @@ include::chapters/core.adoc[]
 include::chapters/microservices.adoc[]
 
 include::chapters/persistence.adoc[]
-
-include::chapters/additional.adoc[]
