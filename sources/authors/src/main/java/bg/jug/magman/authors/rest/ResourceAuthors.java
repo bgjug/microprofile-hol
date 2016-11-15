@@ -53,13 +53,13 @@ public class ResourceAuthors {
 
     @POST
     @Path("/")
-    public void addAuthor(@QueryParam("Author") String author) {
+    public void addAuthor(String author) {
         authorDAO.addAuthor(readAuthorFromJson(author));
     }
 
     @PUT
     @Path("/update")
-    public void updateAuthor(@QueryParam("Author") String author) {
+    public void updateAuthor(String author) {
         authorDAO.updateAuthor(readAuthorFromJson(author));
     }
 

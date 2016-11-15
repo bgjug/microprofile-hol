@@ -48,21 +48,21 @@ public class ResourceSubscribers {
 
     @POST
     @Path("/")
-    public void addSubscriber(@QueryParam("Subscriber") String subscriberString) {
+    public void addSubscriber(String subscriberString) {
         Subscriber subscriber = readSubscriberFromJson(subscriberString);
         subscribersDAO.addSubscriber(subscriber);
     }
 
     @PUT
     @Path("/")
-    public void updateSubscriber(@QueryParam("Subscriber") String subscriberString) {
+    public void updateSubscriber(String subscriberString) {
         Subscriber subscriber = readSubscriberFromJson(subscriberString);
         subscribersDAO.updateSubscriber(subscriber);
     }
 
     @PUT
     @Path("/prolong")
-    public void prolongSubscription(@QueryParam("Subscriber") String subscriberString, @QueryParam("untilDay") String untilDay) {
+    public void prolongSubscription(String subscriberString, String untilDay) {
         Subscriber subscriber = readSubscriberFromJson(subscriberString);
         LocalDate date = LocalDate.parse(untilDay, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         subscribersDAO.prolongSubscription(subscriber, date);
