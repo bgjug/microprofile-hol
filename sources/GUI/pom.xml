@@ -93,9 +93,9 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <tomeeHttpPort>10000</tomeeHttpPort>
-                    <tomeeAjpPort>10001</tomeeAjpPort>
-                    <tomeeShutdownPort>10002</tomeeShutdownPort>
+                    <tomeeHttpPort>${uiPort}</tomeeHttpPort>
+                    <tomeeAjpPort>9991</tomeeAjpPort>
+                    <tomeeShutdownPort>9992</tomeeShutdownPort>
                     <tomeeClassifier>plume</tomeeClassifier>
                 </configuration>
             </plugin>
