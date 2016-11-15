@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package bg.jug.magman.resources;
+package bg.jug.magman.content.resources;
 
-import bg.jug.magman.domain.Article;
-import bg.jug.magman.domain.Comment;
-import bg.jug.magman.persistence.ArticleDAO;
+import bg.jug.magman.content.domain.Comment;
+import bg.jug.magman.content.persistence.ArticleDAO;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;

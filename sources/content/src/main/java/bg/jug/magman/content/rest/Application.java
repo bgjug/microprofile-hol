@@ -13,12 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package bg.jug.magman.resources;
+package bg.jug.magman.content.rest;
 
-public class ContentResource {
+import javax.ws.rs.ApplicationPath;
 
-    public String getArticles() {
-        return "articles";
-    }
-
+@ApplicationPath("/content")
+public class Application extends javax.ws.rs.core.Application {
 }

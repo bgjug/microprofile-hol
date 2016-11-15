@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package bg.jug.magman.rest;
+package bg.jug.magman.content.domain;
 
-import javax.ws.rs.ApplicationPath;
+import javax.json.JsonObject;
 
-@ApplicationPath("/content")
-public class Application extends javax.ws.rs.core.Application {
+public interface Jsonable {
+
+    JsonObject toJson();
 }

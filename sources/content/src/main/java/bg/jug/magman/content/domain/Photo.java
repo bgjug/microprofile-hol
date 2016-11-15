@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package bg.jug.magman.domain;
+package bg.jug.magman.content.domain;
 
 import javax.json.*;
 import java.io.File;
