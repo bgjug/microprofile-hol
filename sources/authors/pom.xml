@@ -89,7 +89,7 @@
     </dependencies>
 
     <build>
-        <finalName>authors</finalName>
+        <finalName>ROOT</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.tomee.maven</groupId>

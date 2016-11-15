@@ -7,7 +7,7 @@ import java.util.Set;
 /**
  * Created by Dmitry Alexandrov on 28.10.16.
  */
-@ApplicationPath("/")
+@ApplicationPath("/subscribers")
 public class Application extends javax.ws.rs.core.Application {
 
     @Override
