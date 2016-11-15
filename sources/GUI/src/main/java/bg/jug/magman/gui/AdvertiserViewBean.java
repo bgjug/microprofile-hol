@@ -4,12 +4,15 @@ import bg.jug.magman.clients.AdvertisersClient;
 import bg.jug.magman.domain.Advertiser;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.inject.Model;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * Created by Dmitry Alexandrov on 14.11.16.
  */
+@Model
 public class AdvertiserViewBean {
 
     @Inject
