@@ -1,21 +1,283 @@
-== Micro Services Enablement
+== Make jar, not war
 
-=== Make jar, not war
+So far what we showed was nothing different than a usual Java EE application with a stripped number of technologies.
+But the delivery model stays the same: war deployed into an application server.
+The current trend in microservices development is to build an executable jar that packs everything - the application code plus the application server.
 
-==== WildFly Swarm
+The fat jar approach is not yet standardized (it's not even talked to be standardized).
+However, it is one of the requirements for the MicroProfile.
+That is why it is implemented in a quite different way between the application server vendors.
+In the following subsections we'll show you how you can configure the Maven build to spawn executable jar besides the deployable war.
 
-==== Apache TomEE
+Another thing to make sure is the path to the RESTful resources.
+So far it was `/<war-name>/<application-path>/<resource-path>`
+Which resulted for example to `/authors/authors`.
+We want to avoid repeating one and thing twice and make it look like the application was deployed in the application server root.
 
-==== IBM Liberty Profile
+=== WildFly Swarm
 
-==== Payara Micro
+For WildFly Swarm we need to adds its plugin and dependency to pom.xml.
+As we decided earlier on, we'll deliver the _Advertisers_ microservice on that runtime, so open its POM file.
 
-=== Running on non-default HTTP port
+You should first add the WildFly Swarm Maven plugin:
 
-==== WildFly Swarm
+[source, xml]
+----
+<project>
+    ....
+    <build>
+        <finalName>advertisers</finalName>
+        <plugins>
+            ....
+            <plugin>
+                <groupId>org.wildfly.swarm</groupId>
+                <artifactId>wildfly-swarm-plugin</artifactId>
+                <version>${version.wildfly-swarm}</version>
+                <executions>
+                    <execution>
+                        <id>package</id>
+                        <goals>
+                            <goal>package</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    ....
+</project>
+----
 
-==== Apache TomEE
+As the plugin and dependency share the same version, it is a good practice to put it in the POM properties section:
 
-==== IBM Liberty Profile
+[source, xml]
+----
+<properties>
+    ....
+    <version.wildfly-swarm>2016.9</version.wildfly-swarm>
+</properties>
+----
 
-==== Payara Micro
+Finally add the WildFly Swarm dependency:
+
+[source, xml]
+----
+<dependencies>
+    ....
+    <dependency>
+        <groupId>org.wildfly.swarm</groupId>
+        <artifactId>microprofile</artifactId>
+        <version>${version.wildfly-swarm}</version>
+        <scope>provided</scope>
+    </dependency>
+</dependencies>
+----
+
+After building the project with Maven, you will notice `advertisers-swarm.jar` in the target directory.
+You can run it with
+
+----
+java -jar advertisers-swarm
+----
+
+If you've worked on this microservice so far, you should be able to access the resource at http://localhost:8080/advertisers
+
+=== Apache TomEE
+
+Add the TomEE maven plugin to the plugins section of your pom.xml:
+
+[source, xml]
+----
+<build>
+    <finalName>ROOT</finalName>
+    <plugins>
+        ....
+        <plugin>
+            <groupId>org.apache.tomee.maven</groupId>
+            <artifactId>tomee-maven-plugin</artifactId>
+            <version>7.0.1</version>
+            <executions>
+                <execution>
+                    <id>build-exec</id>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>exec</goal>
+                    </goals>
+                </execution>
+            </executions>
+            <configuration>
+                <tomeeClassifier>webprofile</tomeeClassifier>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
+----
+
+Notice the `finalName` element.
+We set it to `ROOT` so that the resource is exposed directly at the server root path.
+
+After running `mvn clean install`, you'll find a ROOT-exec.jar in the target directory.
+You can run it like that (from the `authors` directory):
+
+----
+java -jar ROOT-exec.jar
+----
+
+And the authors resource should be available at `http://localhost:8080/authors`
+
+=== IBM Liberty Profile
+
+IBM Liberty profile has also its dedicated Maven plugin.
+It needs much more things to configure though:
+
+[source, xml]
+----
+<plugin>
+    <groupId>net.wasdev.wlp.maven.plugins</groupId>
+    <artifactId>liberty-maven-plugin</artifactId>
+    <executions>
+        <execution>
+            <id>create-server</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+                <goal>create-server</goal>
+            </goals>
+        </execution>
+        <execution>
+            <id>start-server</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+                <goal>start-server</goal>
+            </goals>
+            <configuration>
+                <verifyTimeout>60</verifyTimeout>
+            </configuration>
+        </execution>
+        <execution>
+            <id>deploy-app</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+                <goal>deploy</goal>
+            </goals>
+            <configuration>
+                <appArchive>${project.build.directory}/content.war</appArchive>
+            </configuration>
+        </execution>
+        <execution>
+            <id>stop-server</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+                <goal>stop-server</goal>
+            </goals>
+            <configuration>
+                <serverStopTimeout>60</serverStopTimeout>
+            </configuration>
+        </execution>
+        <execution>
+            <id>package-server</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+                <goal>package-server</goal>
+            </goals>
+            <configuration>
+                <assemblyInstallDirectory>${project.build.directory}</assemblyInstallDirectory>
+                <packageFile>${project.build.directory}/content.jar</packageFile>
+                <include>runnable</include>
+            </configuration>
+        </execution>
+    </executions>
+    <configuration>
+        <assemblyArtifact>
+            <groupId>com.ibm.websphere.appserver.runtime</groupId>
+            <artifactId>wlp-microProfile1</artifactId>
+            <version>16.0.0.3</version>
+            <type>zip</type>
+        </assemblyArtifact>
+        <userDirectory>${project.build.directory}</userDirectory>
+        <serverName>contentServer</serverName>
+    </configuration>
+</plugin>
+----
+
+If you want your resorce to be exposed directly at the root path, add this content to content/src/main/webapp/WEB-INF/ibm-web-ext.xml:
+
+[source, xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<web-ext
+	xmlns="http://websphere.ibm.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://websphere.ibm.com/xml/ns/javaee http://websphere.ibm.com/xml/ns/javaee/ibm-web-ext_1_0.xsd"
+	version="1.0">
+
+	<reload-interval value="3"/>
+	<context-root uri="/"/>
+	<enable-directory-browsing value="false"/>
+	<enable-file-serving value="true"/>
+	<enable-reloading value="true"/>
+	<enable-serving-servlets-by-class-name value="false" />
+
+</web-ext>
+----
+
+This time, after running the maven build, you'll get content.jar file in the target directoy.
+Run it: `java -jar content.jar`.
+
+By default the server runs on port 9080, so you can access the articles at `http://localhost:9080/content`
+
+=== Payara Micro
+
+In Payara micro you simply run a Java main class from the `payara-microprofile` artifact:
+
+[source, xml]
+----
+<plugin>
+    <groupId>org.codehaus.mojo</groupId>
+    <artifactId>exec-maven-plugin</artifactId>
+    <dependencies>
+        <dependency>
+            <groupId>fish.payara.extras</groupId>
+            <artifactId>payara-microprofile</artifactId>
+            <version>1.0</version>
+        </dependency>
+    </dependencies>
+    <executions>
+        <execution>
+            <id>payara-uber-jar</id>
+            <phase>package</phase>
+            <goals>
+                <goal>java</goal>
+            </goals>
+            <configuration>
+                <mainClass>fish.payara.micro.PayaraMicro</mainClass>
+                <arguments>
+                    <argument>--port 8080</argument>
+                    <argument>--noCluster</argument>
+                    <argument>--autoBindHttp</argument>
+                    <argument>--logo</argument>
+                    <argument>--deploy</argument>
+                    <argument>${basedir}/target/ROOT.war</argument>
+                    <argument>--outputUberJar</argument>
+                    <argument>${basedir}/target/ROOT.jar</argument>
+                </arguments>
+                <includeProjectDependencies>true</includeProjectDependencies>
+                <includePluginDependencies>true</includePluginDependencies>
+                <executableDependency>
+                    <groupId>fish.payara.extras</groupId>
+                    <artifactId>payara-microprofile</artifactId>
+                </executableDependency>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+----
+
+We told it to build file ROOT.jar.
+You also need to create a `glassfish-web.xml` file in the `subscribers/src/main/webapp/WEB-INF` directory with the following content:
+
+[source, xml]
+----
+<glassfish-web-app>
+    <context-root>/</context-root>
+</glassfish-web-app>
+----

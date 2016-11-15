@@ -538,24 +538,12 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#_and_now_what">And now what?</a></li>
 </ul>
 </li>
-<li><a href="#_micro_services_enablement">Micro Services Enablement</a>
-<ul class="sectlevel2">
 <li><a href="#_make_jar_not_war">Make jar, not war</a>
-<ul class="sectlevel3">
+<ul class="sectlevel2">
 <li><a href="#_wildfly_swarm">WildFly Swarm</a></li>
 <li><a href="#_apache_tomee">Apache TomEE</a></li>
 <li><a href="#_ibm_liberty_profile">IBM Liberty Profile</a></li>
 <li><a href="#_payara_micro">Payara Micro</a></li>
-</ul>
-</li>
-<li><a href="#_running_on_non_default_http_port">Running on non-default HTTP port</a>
-<ul class="sectlevel3">
-<li><a href="#_wildfly_swarm_2">WildFly Swarm</a></li>
-<li><a href="#_apache_tomee_2">Apache TomEE</a></li>
-<li><a href="#_ibm_liberty_profile_2">IBM Liberty Profile</a></li>
-<li><a href="#_payara_micro_2">Payara Micro</a></li>
-</ul>
-</li>
 </ul>
 </li>
 <li><a href="#_what_about_persistence">What about persistence?</a></li>
@@ -1290,44 +1278,313 @@ Some hints:</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_micro_services_enablement">Micro Services Enablement</h2>
+<h2 id="_make_jar_not_war">Make jar, not war</h2>
 <div class="sectionbody">
-<div class="sect2">
-<h3 id="_make_jar_not_war">Make jar, not war</h3>
-<div class="sect3">
-<h4 id="_wildfly_swarm">WildFly Swarm</h4>
-
+<div class="paragraph">
+<p>So far what we showed was nothing different than a usual Java EE application with a stripped number of technologies.
+But the delivery model stays the same: war deployed into an application server.
+The current trend in microservices development is to build an executable jar that packs everything - the application code plus the application server.</p>
 </div>
-<div class="sect3">
-<h4 id="_apache_tomee">Apache TomEE</h4>
-
+<div class="paragraph">
+<p>The fat jar approach is not yet standardized (it&#8217;s not even talked to be standardized).
+However, it is one of the requirements for the MicroProfile.
+That is why it is implemented in a quite different way between the application server vendors.
+In the following subsections we&#8217;ll show you how you can configure the Maven build to spawn executable jar besides the deployable war.</p>
 </div>
-<div class="sect3">
-<h4 id="_ibm_liberty_profile">IBM Liberty Profile</h4>
-
-</div>
-<div class="sect3">
-<h4 id="_payara_micro">Payara Micro</h4>
-
-</div>
+<div class="paragraph">
+<p>Another thing to make sure is the path to the RESTful resources.
+So far it was <code>/&lt;war-name&gt;/&lt;application-path&gt;/&lt;resource-path&gt;</code>
+Which resulted for example to <code>/authors/authors</code>.
+We want to avoid repeating one and thing twice and make it look like the application was deployed in the application server root.</p>
 </div>
 <div class="sect2">
-<h3 id="_running_on_non_default_http_port">Running on non-default HTTP port</h3>
-<div class="sect3">
-<h4 id="_wildfly_swarm_2">WildFly Swarm</h4>
-
+<h3 id="_wildfly_swarm">WildFly Swarm</h3>
+<div class="paragraph">
+<p>For WildFly Swarm we need to adds its plugin and dependency to pom.xml.
+As we decided earlier on, we&#8217;ll deliver the <em>Advertisers</em> microservice on that runtime, so open its POM file.</p>
 </div>
-<div class="sect3">
-<h4 id="_apache_tomee_2">Apache TomEE</h4>
-
+<div class="paragraph">
+<p>You should first add the WildFly Swarm Maven plugin:</p>
 </div>
-<div class="sect3">
-<h4 id="_ibm_liberty_profile_2">IBM Liberty Profile</h4>
-
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;project&gt;</span>
+    ....
+    <span class="tag">&lt;build&gt;</span>
+        <span class="tag">&lt;finalName&gt;</span>advertisers<span class="tag">&lt;/finalName&gt;</span>
+        <span class="tag">&lt;plugins&gt;</span>
+            ....
+            <span class="tag">&lt;plugin&gt;</span>
+                <span class="tag">&lt;groupId&gt;</span>org.wildfly.swarm<span class="tag">&lt;/groupId&gt;</span>
+                <span class="tag">&lt;artifactId&gt;</span>wildfly-swarm-plugin<span class="tag">&lt;/artifactId&gt;</span>
+                <span class="tag">&lt;version&gt;</span>${version.wildfly-swarm}<span class="tag">&lt;/version&gt;</span>
+                <span class="tag">&lt;executions&gt;</span>
+                    <span class="tag">&lt;execution&gt;</span>
+                        <span class="tag">&lt;id&gt;</span>package<span class="tag">&lt;/id&gt;</span>
+                        <span class="tag">&lt;goals&gt;</span>
+                            <span class="tag">&lt;goal&gt;</span>package<span class="tag">&lt;/goal&gt;</span>
+                        <span class="tag">&lt;/goals&gt;</span>
+                    <span class="tag">&lt;/execution&gt;</span>
+                <span class="tag">&lt;/executions&gt;</span>
+            <span class="tag">&lt;/plugin&gt;</span>
+        <span class="tag">&lt;/plugins&gt;</span>
+    <span class="tag">&lt;/build&gt;</span>
+    ....
+<span class="tag">&lt;/project&gt;</span></code></pre>
 </div>
-<div class="sect3">
-<h4 id="_payara_micro_2">Payara Micro</h4>
+</div>
+<div class="paragraph">
+<p>As the plugin and dependency share the same version, it is a good practice to put it in the POM properties section:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;properties&gt;</span>
+    ....
+    <span class="tag">&lt;version.wildfly-swarm&gt;</span>2016.9<span class="tag">&lt;/version.wildfly-swarm&gt;</span>
+<span class="tag">&lt;/properties&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Finally add the WildFly Swarm dependency:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependencies&gt;</span>
+    ....
+    <span class="tag">&lt;dependency&gt;</span>
+        <span class="tag">&lt;groupId&gt;</span>org.wildfly.swarm<span class="tag">&lt;/groupId&gt;</span>
+        <span class="tag">&lt;artifactId&gt;</span>microprofile<span class="tag">&lt;/artifactId&gt;</span>
+        <span class="tag">&lt;version&gt;</span>${version.wildfly-swarm}<span class="tag">&lt;/version&gt;</span>
+        <span class="tag">&lt;scope&gt;</span>provided<span class="tag">&lt;/scope&gt;</span>
+    <span class="tag">&lt;/dependency&gt;</span>
+<span class="tag">&lt;/dependencies&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>After building the project with Maven, you will notice <code>advertisers-swarm.jar</code> in the target directory.
+You can run it with</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>java -jar advertisers-swarm</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you&#8217;ve worked on this microservice so far, you should be able to access the resource at <a href="http://localhost:8080/advertisers" class="bare">http://localhost:8080/advertisers</a></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_apache_tomee">Apache TomEE</h3>
+<div class="paragraph">
+<p>Add the TomEE maven plugin to the plugins section of your pom.xml:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;build&gt;</span>
+    <span class="tag">&lt;finalName&gt;</span>ROOT<span class="tag">&lt;/finalName&gt;</span>
+    <span class="tag">&lt;plugins&gt;</span>
+        ....
+        <span class="tag">&lt;plugin&gt;</span>
+            <span class="tag">&lt;groupId&gt;</span>org.apache.tomee.maven<span class="tag">&lt;/groupId&gt;</span>
+            <span class="tag">&lt;artifactId&gt;</span>tomee-maven-plugin<span class="tag">&lt;/artifactId&gt;</span>
+            <span class="tag">&lt;version&gt;</span>7.0.1<span class="tag">&lt;/version&gt;</span>
+            <span class="tag">&lt;executions&gt;</span>
+                <span class="tag">&lt;execution&gt;</span>
+                    <span class="tag">&lt;id&gt;</span>build-exec<span class="tag">&lt;/id&gt;</span>
+                    <span class="tag">&lt;phase&gt;</span>package<span class="tag">&lt;/phase&gt;</span>
+                    <span class="tag">&lt;goals&gt;</span>
+                        <span class="tag">&lt;goal&gt;</span>exec<span class="tag">&lt;/goal&gt;</span>
+                    <span class="tag">&lt;/goals&gt;</span>
+                <span class="tag">&lt;/execution&gt;</span>
+            <span class="tag">&lt;/executions&gt;</span>
+            <span class="tag">&lt;configuration&gt;</span>
+                <span class="tag">&lt;tomeeClassifier&gt;</span>webprofile<span class="tag">&lt;/tomeeClassifier&gt;</span>
+            <span class="tag">&lt;/configuration&gt;</span>
+        <span class="tag">&lt;/plugin&gt;</span>
+    <span class="tag">&lt;/plugins&gt;</span>
+<span class="tag">&lt;/build&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Notice the <code>finalName</code> element.
+We set it to <code>ROOT</code> so that the resource is exposed directly at the server root path.</p>
+</div>
+<div class="paragraph">
+<p>After running <code>mvn clean install</code>, you&#8217;ll find a ROOT-exec.jar in the target directory.
+You can run it like that (from the <code>authors</code> directory):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>java -jar ROOT-exec.jar</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And the authors resource should be available at <code><a href="http://localhost:8080/authors" class="bare">http://localhost:8080/authors</a></code></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_ibm_liberty_profile">IBM Liberty Profile</h3>
+<div class="paragraph">
+<p>IBM Liberty profile has also its dedicated Maven plugin.
+It needs much more things to configure though:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;plugin&gt;</span>
+    <span class="tag">&lt;groupId&gt;</span>net.wasdev.wlp.maven.plugins<span class="tag">&lt;/groupId&gt;</span>
+    <span class="tag">&lt;artifactId&gt;</span>liberty-maven-plugin<span class="tag">&lt;/artifactId&gt;</span>
+    <span class="tag">&lt;executions&gt;</span>
+        <span class="tag">&lt;execution&gt;</span>
+            <span class="tag">&lt;id&gt;</span>create-server<span class="tag">&lt;/id&gt;</span>
+            <span class="tag">&lt;phase&gt;</span>pre-integration-test<span class="tag">&lt;/phase&gt;</span>
+            <span class="tag">&lt;goals&gt;</span>
+                <span class="tag">&lt;goal&gt;</span>create-server<span class="tag">&lt;/goal&gt;</span>
+            <span class="tag">&lt;/goals&gt;</span>
+        <span class="tag">&lt;/execution&gt;</span>
+        <span class="tag">&lt;execution&gt;</span>
+            <span class="tag">&lt;id&gt;</span>start-server<span class="tag">&lt;/id&gt;</span>
+            <span class="tag">&lt;phase&gt;</span>pre-integration-test<span class="tag">&lt;/phase&gt;</span>
+            <span class="tag">&lt;goals&gt;</span>
+                <span class="tag">&lt;goal&gt;</span>start-server<span class="tag">&lt;/goal&gt;</span>
+            <span class="tag">&lt;/goals&gt;</span>
+            <span class="tag">&lt;configuration&gt;</span>
+                <span class="tag">&lt;verifyTimeout&gt;</span>60<span class="tag">&lt;/verifyTimeout&gt;</span>
+            <span class="tag">&lt;/configuration&gt;</span>
+        <span class="tag">&lt;/execution&gt;</span>
+        <span class="tag">&lt;execution&gt;</span>
+            <span class="tag">&lt;id&gt;</span>deploy-app<span class="tag">&lt;/id&gt;</span>
+            <span class="tag">&lt;phase&gt;</span>pre-integration-test<span class="tag">&lt;/phase&gt;</span>
+            <span class="tag">&lt;goals&gt;</span>
+                <span class="tag">&lt;goal&gt;</span>deploy<span class="tag">&lt;/goal&gt;</span>
+            <span class="tag">&lt;/goals&gt;</span>
+            <span class="tag">&lt;configuration&gt;</span>
+                <span class="tag">&lt;appArchive&gt;</span>${project.build.directory}/content.war<span class="tag">&lt;/appArchive&gt;</span>
+            <span class="tag">&lt;/configuration&gt;</span>
+        <span class="tag">&lt;/execution&gt;</span>
+        <span class="tag">&lt;execution&gt;</span>
+            <span class="tag">&lt;id&gt;</span>stop-server<span class="tag">&lt;/id&gt;</span>
+            <span class="tag">&lt;phase&gt;</span>pre-integration-test<span class="tag">&lt;/phase&gt;</span>
+            <span class="tag">&lt;goals&gt;</span>
+                <span class="tag">&lt;goal&gt;</span>stop-server<span class="tag">&lt;/goal&gt;</span>
+            <span class="tag">&lt;/goals&gt;</span>
+            <span class="tag">&lt;configuration&gt;</span>
+                <span class="tag">&lt;serverStopTimeout&gt;</span>60<span class="tag">&lt;/serverStopTimeout&gt;</span>
+            <span class="tag">&lt;/configuration&gt;</span>
+        <span class="tag">&lt;/execution&gt;</span>
+        <span class="tag">&lt;execution&gt;</span>
+            <span class="tag">&lt;id&gt;</span>package-server<span class="tag">&lt;/id&gt;</span>
+            <span class="tag">&lt;phase&gt;</span>pre-integration-test<span class="tag">&lt;/phase&gt;</span>
+            <span class="tag">&lt;goals&gt;</span>
+                <span class="tag">&lt;goal&gt;</span>package-server<span class="tag">&lt;/goal&gt;</span>
+            <span class="tag">&lt;/goals&gt;</span>
+            <span class="tag">&lt;configuration&gt;</span>
+                <span class="tag">&lt;assemblyInstallDirectory&gt;</span>${project.build.directory}<span class="tag">&lt;/assemblyInstallDirectory&gt;</span>
+                <span class="tag">&lt;packageFile&gt;</span>${project.build.directory}/content.jar<span class="tag">&lt;/packageFile&gt;</span>
+                <span class="tag">&lt;include&gt;</span>runnable<span class="tag">&lt;/include&gt;</span>
+            <span class="tag">&lt;/configuration&gt;</span>
+        <span class="tag">&lt;/execution&gt;</span>
+    <span class="tag">&lt;/executions&gt;</span>
+    <span class="tag">&lt;configuration&gt;</span>
+        <span class="tag">&lt;assemblyArtifact&gt;</span>
+            <span class="tag">&lt;groupId&gt;</span>com.ibm.websphere.appserver.runtime<span class="tag">&lt;/groupId&gt;</span>
+            <span class="tag">&lt;artifactId&gt;</span>wlp-microProfile1<span class="tag">&lt;/artifactId&gt;</span>
+            <span class="tag">&lt;version&gt;</span>16.0.0.3<span class="tag">&lt;/version&gt;</span>
+            <span class="tag">&lt;type&gt;</span>zip<span class="tag">&lt;/type&gt;</span>
+        <span class="tag">&lt;/assemblyArtifact&gt;</span>
+        <span class="tag">&lt;userDirectory&gt;</span>${project.build.directory}<span class="tag">&lt;/userDirectory&gt;</span>
+        <span class="tag">&lt;serverName&gt;</span>contentServer<span class="tag">&lt;/serverName&gt;</span>
+    <span class="tag">&lt;/configuration&gt;</span>
+<span class="tag">&lt;/plugin&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you want your resorce to be exposed directly at the root path, add this content to content/src/main/webapp/WEB-INF/ibm-web-ext.xml:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="preprocessor">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="tag">&lt;web-ext</span>
+        <span class="attribute-name">xmlns</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">http://websphere.ibm.com/xml/ns/javaee</span><span class="delimiter">&quot;</span></span>
+        <span class="attribute-name">xmlns:xsi</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">http://www.w3.org/2001/XMLSchema-instance</span><span class="delimiter">&quot;</span></span>
+        <span class="attribute-name">xsi:schemaLocation</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">http://websphere.ibm.com/xml/ns/javaee http://websphere.ibm.com/xml/ns/javaee/ibm-web-ext_1_0.xsd</span><span class="delimiter">&quot;</span></span>
+        <span class="attribute-name">version</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">1.0</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
 
+        <span class="tag">&lt;reload-interval</span> <span class="attribute-name">value</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">3</span><span class="delimiter">&quot;</span></span><span class="tag">/&gt;</span>
+        <span class="tag">&lt;context-root</span> <span class="attribute-name">uri</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span><span class="tag">/&gt;</span>
+        <span class="tag">&lt;enable-directory-browsing</span> <span class="attribute-name">value</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">false</span><span class="delimiter">&quot;</span></span><span class="tag">/&gt;</span>
+        <span class="tag">&lt;enable-file-serving</span> <span class="attribute-name">value</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">true</span><span class="delimiter">&quot;</span></span><span class="tag">/&gt;</span>
+        <span class="tag">&lt;enable-reloading</span> <span class="attribute-name">value</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">true</span><span class="delimiter">&quot;</span></span><span class="tag">/&gt;</span>
+        <span class="tag">&lt;enable-serving-servlets-by-class-name</span> <span class="attribute-name">value</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">false</span><span class="delimiter">&quot;</span></span> <span class="tag">/&gt;</span>
+
+<span class="tag">&lt;/web-ext&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This time, after running the maven build, you&#8217;ll get content.jar file in the target directoy.
+Run it: <code>java -jar content.jar</code>.</p>
+</div>
+<div class="paragraph">
+<p>By default the server runs on port 9080, so you can access the articles at <code><a href="http://localhost:9080/content" class="bare">http://localhost:9080/content</a></code></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_payara_micro">Payara Micro</h3>
+<div class="paragraph">
+<p>In Payara micro you simply run a Java main class from the <code>payara-microprofile</code> artifact:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;plugin&gt;</span>
+    <span class="tag">&lt;groupId&gt;</span>org.codehaus.mojo<span class="tag">&lt;/groupId&gt;</span>
+    <span class="tag">&lt;artifactId&gt;</span>exec-maven-plugin<span class="tag">&lt;/artifactId&gt;</span>
+    <span class="tag">&lt;dependencies&gt;</span>
+        <span class="tag">&lt;dependency&gt;</span>
+            <span class="tag">&lt;groupId&gt;</span>fish.payara.extras<span class="tag">&lt;/groupId&gt;</span>
+            <span class="tag">&lt;artifactId&gt;</span>payara-microprofile<span class="tag">&lt;/artifactId&gt;</span>
+            <span class="tag">&lt;version&gt;</span>1.0<span class="tag">&lt;/version&gt;</span>
+        <span class="tag">&lt;/dependency&gt;</span>
+    <span class="tag">&lt;/dependencies&gt;</span>
+    <span class="tag">&lt;executions&gt;</span>
+        <span class="tag">&lt;execution&gt;</span>
+            <span class="tag">&lt;id&gt;</span>payara-uber-jar<span class="tag">&lt;/id&gt;</span>
+            <span class="tag">&lt;phase&gt;</span>package<span class="tag">&lt;/phase&gt;</span>
+            <span class="tag">&lt;goals&gt;</span>
+                <span class="tag">&lt;goal&gt;</span>java<span class="tag">&lt;/goal&gt;</span>
+            <span class="tag">&lt;/goals&gt;</span>
+            <span class="tag">&lt;configuration&gt;</span>
+                <span class="tag">&lt;mainClass&gt;</span>fish.payara.micro.PayaraMicro<span class="tag">&lt;/mainClass&gt;</span>
+                <span class="tag">&lt;arguments&gt;</span>
+                    <span class="tag">&lt;argument&gt;</span>--port 8080<span class="tag">&lt;/argument&gt;</span>
+                    <span class="tag">&lt;argument&gt;</span>--noCluster<span class="tag">&lt;/argument&gt;</span>
+                    <span class="tag">&lt;argument&gt;</span>--autoBindHttp<span class="tag">&lt;/argument&gt;</span>
+                    <span class="tag">&lt;argument&gt;</span>--logo<span class="tag">&lt;/argument&gt;</span>
+                    <span class="tag">&lt;argument&gt;</span>--deploy<span class="tag">&lt;/argument&gt;</span>
+                    <span class="tag">&lt;argument&gt;</span>${basedir}/target/ROOT.war<span class="tag">&lt;/argument&gt;</span>
+                    <span class="tag">&lt;argument&gt;</span>--outputUberJar<span class="tag">&lt;/argument&gt;</span>
+                    <span class="tag">&lt;argument&gt;</span>${basedir}/target/ROOT.jar<span class="tag">&lt;/argument&gt;</span>
+                <span class="tag">&lt;/arguments&gt;</span>
+                <span class="tag">&lt;includeProjectDependencies&gt;</span>true<span class="tag">&lt;/includeProjectDependencies&gt;</span>
+                <span class="tag">&lt;includePluginDependencies&gt;</span>true<span class="tag">&lt;/includePluginDependencies&gt;</span>
+                <span class="tag">&lt;executableDependency&gt;</span>
+                    <span class="tag">&lt;groupId&gt;</span>fish.payara.extras<span class="tag">&lt;/groupId&gt;</span>
+                    <span class="tag">&lt;artifactId&gt;</span>payara-microprofile<span class="tag">&lt;/artifactId&gt;</span>
+                <span class="tag">&lt;/executableDependency&gt;</span>
+            <span class="tag">&lt;/configuration&gt;</span>
+        <span class="tag">&lt;/execution&gt;</span>
+    <span class="tag">&lt;/executions&gt;</span>
+<span class="tag">&lt;/plugin&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We told it to build file ROOT.jar.
+You also need to create a <code>glassfish-web.xml</code> file in the <code>subscribers/src/main/webapp/WEB-INF</code> directory with the following content:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;glassfish-web-app&gt;</span>
+    <span class="tag">&lt;context-root&gt;</span>/<span class="tag">&lt;/context-root&gt;</span>
+<span class="tag">&lt;/glassfish-web-app&gt;</span></code></pre>
+</div>
 </div>
 </div>
 </div>
