@@ -1,1 +1,49 @@
-= magazine-manager
+= Magazine manager MicroProfile tutorial
+
+== What is this tutorial about
+This tutorial will allow you to explore the full potential of *MicroProfile* through a step by step development of a small Microservice based JavaEE web application .
+
+== What is a MicroProfile?
+The MicroProfile is an initiative that is supported by many people from the Java EE community, as well as key Enterprise Java vendors IBM, RedHat, Tomitribe, and Payara.
+
+The MicroProfile is currently defined to be a very small, but powerful, subset of the Java EE 7 specifications.
+The initially planned baseline is:
+
+* JAX-RS
+* CDI
+* JSON-P
+
+with the intent of community having an active role in the MicroProfile definition and roadmap.
+
+Version 1.2 now includes:
+
+* Health Check 1.0
+* Metrics 1.0
+* Fault Tolerance 1.0
+* JWT Propagation 1.0
+* updated Config 1.1
+
+in addition to:
+
+* CDI 1.2
+* JSON-P 1.0
+* JAX-RS 2.0.
+
+For more info please go to the https://microprofile.io/[MicroProfile] official website.
+
+== What will we do?
+Through the tutorial we will build step by step a small Magazine Manager application.
+It is an example of the most modern *Microservice application*, and demonstrates why *Microprofile* is the best choice!
+
+
+== This tutorial
+This tutorial is delivered in AsciiDoc format and is made as a maven project.
+
+Just `git clone` the project and execute
+----
+mvn install
+----
+
+As a result in `docs\target\generated-docs` you will find *microprofile-hol.pdf* file.
+
+Just follow it and have a lot of fun!
