@@ -28,7 +28,7 @@
         <module>advertisers</module>
         <module>subscribers</module>
         <module>authors</module>
-        <module>GUI</module>
+        <module>gui</module>
     </modules>
 
     <profiles>
@@ -39,7 +39,7 @@
                 <module>advertisers</module>
                 <module>subscribers</module>
                 <module>authors</module>
-                <module>GUI</module>
+                <module>gui</module>
                 <module>start</module>
             </modules>
         </profile>

@@ -1,6 +1,32 @@
 == Introduction
 
-=== The Java MicroProfile
+=== Why MicroProfile?
+
+- Not a buzzword but a real thing
+
+- Many companies jumped on the train with proprietary solutions
+
+- No time to wait for Java EE .next
+
+- Are we sure that we want this as a standard? New EJB CMP?
+
+- MicroProfile is a open source specification
+
+- Vendors, individuals and organizations join forces
+
+- Version 1.0 was announced June 2016, very simplistic
+
+-- 3 specs
+
+-- A POM/BOM project
+
+- At the end, why microprofile
+
+-- Open
+
+-- Future standard
+
+-- This HoL
 
 === Magazine Manager
 
@@ -197,6 +223,6 @@ So far.
 In the next few chapters we'll guide you through the process of building a CDI, JAX-RS, JSON-P application, packing it in fat jar instead of war and dealing with persistence.
 In each chapter we'll show you the different implementation aspects of two of the microservices (_Author_ and _Content_), while the other two we'll leave to you (with some hints from our side).
 
-You've may also noticed the `sources` directory in the root of this repository.
+You've may also noticed the `solution` directory in the root of this repository.
 You can always consult it if the hints are not helpful enough and you don't have whom to ask.
 Besides the solution for the current version of the lab, it contains other features that will probably enter in future extensions that we plan to provide.
