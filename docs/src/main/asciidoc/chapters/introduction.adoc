@@ -2,31 +2,56 @@
 
 === Why MicroProfile?
 
-- Not a buzzword but a real thing
+Microservices and microservice architecture walked the path from a silver-bullet-promising buzzword to a largely adopted concept with growing popularity even among big enterprises.
+There are multiple success stories about companies that broke their monolith into pieces or started directly with microservices.
+Quite a lot of these pieces are developed in Java, so the web application platform vendors quickly jumped on the train.
+They all provided their own opinionated approach for the devs to write, deploy and monitor their apps.
 
-- Many companies jumped on the train with proprietary solutions
+The vendors from the Java EE space got on the microservices highway as well.
+They were also trying to innovate and come with their own implementation of the different microservice patterns, running on top of the application servers they provide.
+But this was definitely not the EE style, which is all about openness and standardization.
+However, when it comes to such a hot topic with that traction, the "standards" path is not always the best one.
+On one hand, something has to be mature enough to become a standard, which will be followed and supported years ahead.
+On the other, the market and the industry doesn't give us that time, and as much as the Java EE vendors care about the standards, they are commercial companies with demanding customers and constant urge to find new ones.
 
-- No time to wait for Java EE .next
+So why not taking a bunch of "de-facto" standards, like the microservices patterns, and quickly turn them into EE specifications?
+And probably ship them in a few months with a special release of the umbrella spec?
+Because we've already been there and we've made that mistake with EJB CMP: (once) cool looking technology being standardized prematurely.
+The difference with the de-facto standards is that they can be easily changed by their de-facto replacement.
+Or removed altogether.
+While this is not the case with Java EE specification, where the pruning process is much more rigorous.
 
-- Are we sure that we want this as a standard? New EJB CMP?
+So what is https://microprofile.io/[MicroProfile]?
+It is an initiative which attempts to take the best of both worlds: bring together experts from all the interested parties, make them agree in the open on how should a certain microservice pattern be implemented and put that in an open specification with an open TCK.
+Where do these experts come from?
+Well, from the Java EE vendors, from other companies, from organizations (like Java User Groups) and even some individuals joined the team to bring their knowledge and energy.
 
-- MicroProfile is a open source specification
+Everything started June 2016.
+Then four vendors (RedHat, IBM, Tomitribe and Payara) and an organization (London Java Community) announced version 1 of MicroProfile.
+Its first target was not to immediately implement microservice patterns: it did not include any.
+It rather aimed at simplicity and at speed.
+Both speed to market as well as speed to start.
+It defined a minimal MicroProfile runtime, which should be built of three Java EE standards: CDI, JAX-RS and JSON-P.
+Having that implemented and working together, makes any server compliant with version 1.
 
-- Vendors, individuals and organizations join forces
+At the end, why MicroProfile?
 
-- Version 1.0 was announced June 2016, very simplistic
+First of all, because it is open.
+The https://github.com/eclipse/microprofile-evolution-process[process to propose] a new specification and the discussions after that are open.
+Specifications mailing lists, expert group meetings, issue trackers and TCKs are open.
 
--- 3 specs
+There's also no single vendor behind it.
+So you can be sure that no single company will steer the future and take all the important decisions.
+And of course this means that there is no vendor lock in if you decide to choose the MicroProfile approach for your microservice solution.
 
--- A POM/BOM project
+Does it mean that MicroProfile means that Java EE will no longer be developed?
+Not at all!
+MicroProfile can be regarded as the incubator project for Java EE.
+Or as a playground to experiment with different technologies and see whether they fit and whether they will stand the time to be standardized.
+And if they do, why not propose a JSR?
 
-- At the end, why microprofile
-
--- Open
-
--- Future standard
-
--- This HoL
+This is exactly what all these vendor had been doing before, but behind closed doors.
+Now it is all in the open and we are all invited to take part!
 
 === Magazine Manager
 
