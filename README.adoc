@@ -1,4 +1,4 @@
-= Magazine manager MicroProfile tutorial
+= Magazine manager MicroProfile tutorial image:https://travis-ci.org/bgjug/microprofile-hol.svg?branch=master["Build Status", link="https://travis-ci.org/bgjug/microprofile-hol"]
 
 == What is this tutorial about
 This tutorial will allow you to explore the full potential of *MicroProfile* through a step by step development of a small Microservice based JavaEE web application .
