@@ -184,7 +184,7 @@ In order to follow better the next steps in this lab, we would suggest that you 
 === Initial project
 
 We've sketched for you an initial maven project containing the four microservices as Maven subprojects.
-It is located under the `lab/magman` directory of this lab.
+It is located under the `/sources` directory of this lab.
 Use your favorite IDE to import that project.
 Make sure that it is imported as Maven project for the IDEs that it is not the default structure.
 
@@ -233,7 +233,7 @@ The we simply depend on the project by adding the following dependency in the fo
 ----
 
 Thus they can use the three MicroProfile specs.
-The only thing you need to do is to run in the `lab/magman` directory:
+The only thing you need to do is to run in the `/sources` directory:
 
 ----
 mvn clean install

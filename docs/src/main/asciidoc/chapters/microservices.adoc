@@ -199,7 +199,7 @@ It needs much more things to configure though:
 </plugin>
 ----
 
-If you want your resorce to be exposed directly at the root path, add this content to content/src/main/webapp/WEB-INF/ibm-web-ext.xml:
+If you want your resource to be exposed directly at the root path, add this content to content/src/main/webapp/WEB-INF/ibm-web-ext.xml:
 
 [source, xml]
 ----
@@ -220,7 +220,7 @@ If you want your resorce to be exposed directly at the root path, add this conte
 </web-ext>
 ----
 
-This time, after running the maven build, you'll get content.jar file in the target directoy.
+This time, after running the maven build, you'll get content.jar file in the target directory.
 Run it: `java -jar content.jar`.
 
 By default the server runs on port 9080, so you can access the articles at `http://localhost:9080/content`

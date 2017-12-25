@@ -35,16 +35,19 @@ For the time being it will return hard coded data:
 ----
 @ApplicationScoped
 public class AuthorsDAO {
-    ArrayList<Author> authors = new ArrayList<>();
-    Author bilboBaggins = new Author("Bilbo", "Baggins", "bilbo@shire.com", true, 1000);
-    Author spiderman = new Author("Spider", "Man", "spiderman@comics.com", false, 860);
-    Author captainPower = new Author("Captain", "Power", "power@futuresoldiers.com", true, 750);
 
-    authors.add(bilboBaggins);
-    authors.add(spiderman);
-    authors.add(captainPower);
+    public ArrayList<Author> getAllAuthors() {
+        ArrayList<Author> authors = new ArrayList<>();
+        Author bilboBaggins = new Author("Bilbo", "Baggins", "bilbo@shire.com", true, 1000);
+        Author spiderman = new Author("Spider", "Man", "spiderman@comics.com", false, 860);
+        Author captainPower = new Author("Captain", "Power", "power@futuresoldiers.com", true, 750);
 
-    return authors;
+        authors.add(bilboBaggins);
+        authors.add(spiderman);
+        authors.add(captainPower);
+
+        return authors;
+    }
 }
 ----
 
@@ -244,7 +247,7 @@ public JsonObject toJson() {
 ----
 
 The entry point here is the `Json.createObjectBuilder()` method.
-Once we get hold of the `JsonObjectBuilder` instance, we can use its `add` method to add the varioud attributes of our JSON object.
+Once we get hold of the `JsonObjectBuilder` instance, we can use its `add` method to add the various attributes of our JSON object.
 At the end, we retrieve the built `JsonObject` and return it.
 
 Back in the resource class, we need to create a JSON array out of our author JSON objects.
