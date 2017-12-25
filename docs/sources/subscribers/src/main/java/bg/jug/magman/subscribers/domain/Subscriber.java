@@ -2,6 +2,9 @@ package bg.jug.magman.subscribers.domain;
 
 import java.time.LocalDate;
 
+/**
+ * Created by Dmitry Alexandrov on 19.10.16.
+ */
 public class Subscriber {
 
     private Long id;

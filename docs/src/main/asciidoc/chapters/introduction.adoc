@@ -188,7 +188,19 @@ It is located under the `/sources` directory of this lab.
 Use your favorite IDE to import that project.
 Make sure that it is imported as Maven project for the IDEs that it is not the default structure.
 
-You'll notice that besides the four microservices there is a simple pom project that groups the three specs:
+You'll notice that every sub module contains one dependency:
+
+[source,xml]
+----
+<dependency>
+    <groupId>io.microprofile</groupId>
+    <artifactId>microprofile</artifactId>
+    <version>1.0.0</version>
+    <type>pom</type>
+</dependency>
+----
+
+This dependency actually  groups  three specs:
 
 [source, xml]
 ----
@@ -219,19 +231,6 @@ You'll notice that besides the four microservices there is a simple pom project 
 
 By depending on that project instead of `javaee-api`, we will make sure that the microservices we develop will not leak a non-MicroProfile technology like EJB.
 
-The we simply depend on the project by adding the following dependency in the four microservices:
-
-[source, xml]
-----
-<dependency>
-    <groupId>bg.jug</groupId>
-    <artifactId>microprofile-dependencies</artifactId>
-    <version>${project.version}</version>
-    <type>pom</type>
-    <scope>provided</scope>
-</dependency>
-----
-
 Thus they can use the three MicroProfile specs.
 The only thing you need to do is to run in the `/sources` directory:
 
@@ -251,3 +250,22 @@ In each chapter we'll show you the different implementation aspects of two of th
 You've may also noticed the `solution` directory in the root of this repository.
 You can always consult it if the hints are not helpful enough and you don't have whom to ask.
 Besides the solution for the current version of the lab, it contains other features that will probably enter in future extensions that we plan to provide.
+
+=== To make it more easy
+There is already one microsevice implemented - the Subscribers microservice. The 0 step is to build it and run it.
+To do this proceed to the `subscribers` folder and run:
+
+----
+mvn clean install
+----
+
+As a result in the `target` fonder a single executable uber-jar `ROOT.jar` will be created. Just run it:
+
+----
+java -jar ROOT.jar
+----
+
+An embedded Payara server containing the Subscribers microservice will boot. Just go to your browser and go to
+`http://localhost:8080/subscribers`. You have to see a bunch of subscribers.
+
+You can explore the RESTful API provided by the microservice in the `ResourceSubscribers` class.

@@ -8,12 +8,10 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>subscribers</artifactId>
-    <packaging>war</packaging>
-    <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+    <name>subscribers</name>
+    <description>The Subscribers microservice resource</description>
+
+
 
     <dependencies>
         <dependency>
@@ -22,10 +20,11 @@
             <version>1.0.0</version>
             <type>pom</type>
         </dependency>
+
     </dependencies>
 
     <build>
-        <finalName>subscribers</finalName>
+        <finalName>ROOT</finalName>
         <plugins>
             <plugin>
                 <artifactId>maven-war-plugin</artifactId>
@@ -34,7 +33,48 @@
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <dependencies>
+                    <dependency>
+                        <groupId>fish.payara.extras</groupId>
+                        <artifactId>payara-microprofile</artifactId>
+                        <version>1.0</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>payara-uber-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>fish.payara.micro.PayaraMicro</mainClass>
+                            <arguments>
+                                <argument>--port 8081</argument>
+                                <argument>--noCluster</argument>
+                                <argument>--autoBindHttp</argument>
+                                <argument>--logo</argument>
+                                <argument>--deploy</argument>
+                                <argument>${basedir}/target/ROOT.war</argument>
+                                <argument>--outputUberJar</argument>
+                                <argument>${basedir}/target/ROOT.jar</argument>
+                            </arguments>
+                            <includePluginDependencies>true</includePluginDependencies>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
+    <packaging>war</packaging>
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 </project>
 

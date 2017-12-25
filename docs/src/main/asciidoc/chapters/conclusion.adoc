@@ -1,0 +1,8 @@
+== Conclusion
+
+Thank you very much participation in this Hands-on-lab!
+We believe you have seen all the benefits of using microservices and the microprofile.io.
+As you have found out the standardization provided by the Java EE platform makes it very easy to run the same code on different servers and to migrate it from one server platform to another.
+You were also able to see that one application can run on multiple platforms simultaneously.
+
+We hope you found it useful!
